@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+SPDX-FileCopyrightText: 2026 Sofie Finnes <sofie+git@finnes.dev>
+SPDX-License-Identifier: EUPL-1.2
+-->
+
+<resources>
+    <string name="app_name">Portemoné Notification Companion</string>
+    <string name="setup_title">Full-card notifications</string>
+    <string name="setup_description">Connect this companion to show large, scannable card notifications on this phone.</string>
+    <string name="setup_explanation">Portemoné will manage nearby cards and post them through this companion. This companion does not access your location, store your cards, or run a background service.</string>
+    <string name="setup_caveat">After connecting, return to Portemoné. Full cards are selected automatically. Android updates may change how cards appear; you can disconnect at any time.</string>
+    <string name="enable">Connect to Portemoné</string>
+    <string name="revoke">Disconnect</string>
+    <string name="notification_settings">Notification settings</string>
+    <string name="status_enabled">Connected to Portemoné</string>
+    <string name="status_disabled">Not connected</string>
+    <string name="status_main_missing">Install Portemoné before connecting this companion.</string>
+    <string name="status_signature_mismatch">Portemoné and this companion are signed by different publishers. Install both from the same source before connecting.</string>
+    <string name="status_notifications_blocked">Notifications are blocked. Open Notification settings to allow nearby cards.</string>
+    <string name="status_channel_blocked">Nearby cards are blocked. Open Notification settings and enable the Nearby cards category.</string>
+    <string name="status_ready">Nearby card notifications are allowed.</string>
+    <string name="status_error">Could not update the companion. Try again.</string>
+    <string name="status_not_verified">Android did not confirm the connection. Try again.</string>
+    <string name="channel_name">Nearby cards</string>
+    <string name="channel_description">Quiet card notifications managed by Portemoné when you are near a saved store.</string>
+</resources>

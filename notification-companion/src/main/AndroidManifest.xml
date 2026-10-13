@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+SPDX-FileCopyrightText: 2026 Sofie Finnes <sofie+git@finnes.dev>
+SPDX-License-Identifier: EUPL-1.2
+-->
+
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <queries><package android:name="dev.finnes.portemone" /></queries>
+    <application android:allowBackup="false" android:label="@string/app_name"
+        android:icon="@mipmap/ic_launcher" android:theme="@style/HelperTheme"
+        android:supportsRtl="true">
+        <!-- Portemoné opens setup explicitly; the companion has no standalone launcher entry. -->
+        <activity android:name=".SetupActivity" android:exported="true"
+            android:excludeFromRecents="true" />
+    </application>
+</manifest>

@@ -1,0 +1,8 @@
+# SPDX-FileCopyrightText: 2026 Sofie Finnes <sofie+git@finnes.dev>
+# SPDX-License-Identifier: EUPL-1.2
+
+# Gradual R8 optimization repackages some Kotlin subclasses while leaving their
+# package-private parents behind (StringsKt__StringBuilderKt/StringsKt__IndentKt),
+# causing IllegalAccessError during WorkManager startup. Preserve package access
+# while still allowing class/member shrinking, renaming, and optimization.
+-keeppackagenames kotlin.**

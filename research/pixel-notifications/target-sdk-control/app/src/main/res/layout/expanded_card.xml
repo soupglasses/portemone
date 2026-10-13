@@ -1,0 +1,16 @@
+<!--
+SPDX-FileCopyrightText: 2026 Sofie Finnes <sofie+git@finnes.dev>
+SPDX-License-Identifier: EUPL-1.2
+-->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:id="@+id/expanded_root" android:layout_height="227dp" android:orientation="horizontal" android:background="#FFFFFF">
+ <LinearLayout android:layout_width="110dp" android:layout_height="match_parent" android:orientation="vertical" android:gravity="center_vertical" android:padding="14dp" android:background="#146C64">
+ <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Example Two" android:textColor="#FFFFFF" android:textSize="26sp" android:textStyle="bold"/>
+ <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:text="Family" android:textColor="#FFFFFF" android:textSize="19sp" android:textStyle="bold"/>
+ <TextView android:id="@+id/target_label" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:textColor="#FFFFFF" android:textSize="12sp"/>
+ </LinearLayout>
+ <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:gravity="center" android:orientation="vertical" android:background="#FFFFFF">
+ <ImageView android:id="@+id/code" android:layout_width="match_parent" android:layout_height="190dp" android:scaleType="center" android:contentDescription="Test QR code 1234567890123456"/>
+ <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:text="1234567890123456" android:textSize="11sp" android:textColor="#334455"/>
+ </LinearLayout>
+</LinearLayout>

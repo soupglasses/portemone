@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+SPDX-FileCopyrightText: 2026 Sofie Finnes <sofie+git@finnes.dev>
+SPDX-License-Identifier: EUPL-1.2
+-->
+
+<!-- Keep custom content within Android's 48dp collapsed allowance. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/notification_surface"
+    android:layout_width="match_parent"
+    android:layout_height="48dp"
+    android:clipToOutline="true"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:ellipsize="end"
+        android:gravity="center_vertical"
+        android:includeFontPadding="false"
+        android:maxLines="1"
+        android:textAppearance="@style/TextAppearance.Compat.Notification.Title" />
+
+    <FrameLayout
+        android:id="@+id/scan_area"
+        android:layout_width="match_parent"
+        android:layout_height="28dp"
+        android:background="@drawable/notification_scan_background"
+        android:paddingVertical="2dp">
+
+        <ImageView
+            android:id="@+id/barcode"
+                android:contentDescription="@string/membership_code"
+            android:layout_width="240dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center"
+            android:scaleType="center" />
+    </FrameLayout>
+
+</LinearLayout>

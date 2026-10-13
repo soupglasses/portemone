@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+SPDX-FileCopyrightText: 2026 Sofie Finnes <sofie+git@finnes.dev>
+SPDX-License-Identifier: EUPL-1.2
+-->
+
+<full-backup-content>
+    <!-- Restore memberships, original pass packages and saved circles, never device-specific presence or geofence receipts. -->
+    <include domain="database" path="wallet-cards.db" />
+</full-backup-content>

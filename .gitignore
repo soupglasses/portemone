@@ -1,0 +1,53 @@
+# SPDX-FileCopyrightText: 2026 Sofie Finnes <sofie+git@finnes.dev>
+# SPDX-License-Identifier: EUPL-1.2
+
+# Build output and caches in every module, including research projects.
+build/
+.gradle/
+.kotlin/
+.ruff_cache/
+__pycache__/
+.externalNativeBuild/
+.cxx/
+*.apk
+*.aab
+*.apks
+*.dex
+*.hprof
+
+# Machine-specific configuration and credentials.
+local.properties
+.idea/
+*.iml
+.DS_Store
+Thumbs.db
+/.aws/
+/.codex/
+/.agents/*
+!/.agents/skills/
+.env
+.env.*
+!.env.example
+mise.local.toml
+.mise.local.toml
+keystore.properties
+signing.properties
+*.jks
+*.keystore
+*.p12
+*.pfx
+*.key
+service-account*.json
+google-services.json
+
+# Device captures and personal wallet exports are not source assets.
+/captures/
+/.diagnostics/
+*.log
+*.pkpass
+*.pkpasses
+*.db
+*.db-shm
+*.db-wal
+
+# Keep the Gradle wrapper JAR and public PKPass trust certificates tracked.

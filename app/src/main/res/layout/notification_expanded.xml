@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+SPDX-FileCopyrightText: 2026 Sofie Finnes <sofie+git@finnes.dev>
+SPDX-License-Identifier: EUPL-1.2
+-->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/notification_surface"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/notification_card_background"
+    android:clipToOutline="true"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/brand_header"
+        android:layout_width="match_parent"
+        android:layout_height="36dp"
+        android:paddingHorizontal="12dp"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:maxLines="1"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textAppearance="@style/TextAppearance.Compat.Notification.Title" />
+
+    </LinearLayout>
+
+    <!-- Reserve the entire white surface for scanning; the number is on the full-screen card. -->
+    <LinearLayout
+        android:id="@+id/scan_area"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/notification_scan_background"
+        android:paddingVertical="8dp">
+
+        <ImageView
+            android:id="@+id/barcode"
+                android:contentDescription="@string/membership_code"
+            android:layout_width="240dp"
+            android:layout_height="88dp"
+            android:layout_gravity="center_horizontal"
+            android:scaleType="center" />
+
+    </LinearLayout>
+</LinearLayout>

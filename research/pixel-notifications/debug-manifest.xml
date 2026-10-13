@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+SPDX-FileCopyrightText: 2026 Sofie Finnes <sofie+git@finnes.dev>
+SPDX-License-Identifier: EUPL-1.2
+-->
+
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Enables opt-in emulator experiments; production notification behavior is unchanged. -->
+    <uses-permission android:name="android.permission.POST_PROMOTED_NOTIFICATIONS" />
+    <queries>
+        <package android:name="dev.finnes.portemone.pixelresearch" />
+    </queries>
+    <application>
+        <activity android:name=".PixelLabActivity" android:exported="false" />
+        <service android:name=".PixelLabService" android:exported="false" android:foregroundServiceType="shortService" />
+    </application>
+</manifest>

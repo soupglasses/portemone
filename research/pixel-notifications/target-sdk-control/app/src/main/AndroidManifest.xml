@@ -1,0 +1,12 @@
+<!--
+SPDX-FileCopyrightText: 2026 Sofie Finnes <sofie+git@finnes.dev>
+SPDX-License-Identifier: EUPL-1.2
+-->
+
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+ <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+ <queries><package android:name="dev.finnes.portemone"/></queries>
+ <application android:theme="@android:style/Theme.Material.Light.NoActionBar" android:label="Pixel card lab" android:icon="@drawable/ic_pin" android:allowBackup="false">
+  <activity android:name=".MainActivity" android:exported="true"><intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/></intent-filter></activity>
+ </application>
+</manifest>

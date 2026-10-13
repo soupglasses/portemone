@@ -1,0 +1,6 @@
+<!--
+SPDX-FileCopyrightText: 2026 Sofie Finnes <sofie+git@finnes.dev>
+SPDX-License-Identifier: EUPL-1.2
+-->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="64dp" android:orientation="vertical" android:gravity="center_vertical" android:background="#146C64" android:padding="12dp"><TextView android:id="@+id/compact_title" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Example Two · Pixel test" android:textColor="#FFFFFF" android:textSize="18sp" android:textStyle="bold"/></LinearLayout>

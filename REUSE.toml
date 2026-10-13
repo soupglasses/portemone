@@ -1,0 +1,17 @@
+# SPDX-FileCopyrightText: 2026 Sofie Finnes <sofie+git@finnes.dev>
+# SPDX-License-Identifier: EUPL-1.2
+
+version = 1
+
+# Google Android skills installed through Android CLI: https://github.com/android/skills
+# Preserve the upstream files; their licensing does not inherit the app's EUPL.
+[[annotations]]
+path = [
+    ".agents/skills/android-cli/**",
+    ".agents/skills/adaptive/**",
+    ".agents/skills/appfunctions/**",
+    ".agents/skills/edge-to-edge/**",
+    ".agents/skills/testing-setup/**",
+]
+SPDX-FileCopyrightText = "Google LLC"
+SPDX-License-Identifier = "Apache-2.0"

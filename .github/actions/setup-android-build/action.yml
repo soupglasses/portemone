@@ -1,0 +1,21 @@
+# SPDX-FileCopyrightText: 2026 Sofie Finnes <sofie+git@finnes.dev>
+# SPDX-License-Identifier: EUPL-1.2
+
+name: Set up Android build
+description: Install the project JDK, Android SDK packages, and Gradle cache.
+runs:
+  using: composite
+  steps:
+    - name: Set up pinned tools
+      uses: jdx/mise-action@v5
+    - name: Set up Android SDK
+      uses: android-actions/setup-android@v3
+      with:
+        packages: platform-tools platforms;android-37.0 build-tools;36.0.0
+    - name: Verify Android SDK installation
+      shell: bash
+      run: |
+        test -f "$ANDROID_HOME/platforms/android-37.0/android.jar"
+        test -x "$ANDROID_HOME/build-tools/36.0.0/apksigner"
+    - name: Set up Gradle
+      uses: gradle/actions/setup-gradle@v4

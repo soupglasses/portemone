@@ -1,0 +1,67 @@
+# SPDX-FileCopyrightText: 2026 Sofie Finnes <sofie+git@finnes.dev>
+# SPDX-License-Identifier: EUPL-1.2
+
+name: Release
+on:
+  push:
+    tags: ['v*']
+permissions:
+  contents: read
+concurrency:
+  group: release
+  cancel-in-progress: false
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    environment: release
+    permissions:
+      contents: write
+      actions: read
+      id-token: write
+      attestations: write
+    steps:
+      - name: Check out release tag
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Validate version and successful main CI
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 scripts/check-release-version.py "$RELEASE_TAG"
+          git merge-base --is-ancestor HEAD origin/main
+          gh api "repos/$GITHUB_REPOSITORY/actions/workflows/android.yml/runs?head_sha=$GITHUB_SHA&status=success&event=push" \
+            --jq '.workflow_runs | any(.head_branch == "main")' | grep -qx true
+      - name: Set up build tools
+        uses: ./.github/actions/setup-android-build
+      - name: Build, sign and verify all release APKs
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: mise run release
+      - name: Attest signed APK provenance
+        uses: actions/attest@v4
+        with:
+          subject-path: |
+            build/release/portemone.apk
+            build/release/portemone-notification-companion.apk
+      - name: Attest main app SBOM
+        uses: actions/attest@v4
+        with:
+          subject-path: build/release/portemone.apk
+          sbom-path: app/build/reports/cyclonedx-direct/bom.json
+      - name: Attest notification companion SBOM
+        uses: actions/attest@v4
+        with:
+          subject-path: build/release/portemone-notification-companion.apk
+          sbom-path: notification-companion/build/reports/cyclonedx-direct/bom.json
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: bash scripts/publish-release.sh "$RELEASE_TAG"

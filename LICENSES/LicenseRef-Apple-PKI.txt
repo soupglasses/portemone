@@ -1,0 +1,12 @@
+Apple PKI certificates
+
+Copyright Apple Inc.
+
+Source: https://www.apple.com/certificateauthority/
+Policy: https://images.apple.com/certificateauthority/pdf/Apple_Certificate_Policy_v7.0.pdf
+
+Section 5.4 identifies the certificates as Apple's property. No separate
+redistribution license for these root certificates has been established here.
+This identifier records that unresolved licensing status; it is not an EUPL
+license or a grant of redistribution rights. See issue #19:
+https://github.com/soupglasses/portemone/issues/19

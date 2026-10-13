@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+SPDX-FileCopyrightText: 2026 Sofie Finnes <sofie+git@finnes.dev>
+SPDX-License-Identifier: EUPL-1.2
+-->
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/notification_surface"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <!-- One composited face: white scan surface, logo and brand fade together.
+         Keep the outer wrapper transparent so the host cannot extract a second background. -->
+    <LinearLayout
+        android:id="@+id/card_face"
+        android:layout_width="match_parent"
+        android:layout_height="204dp"
+        android:layout_gravity="center_horizontal"
+        android:orientation="horizontal"
+        android:baselineAligned="false"
+        android:layoutDirection="ltr"
+        android:background="@drawable/notification_card_background"
+        android:clipToOutline="true"
+        android:layerType="hardware"
+        android:forceHasOverlappingRendering="true">
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/brand_gradient"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitXY"
+                android:visibility="gone"
+                android:importantForAccessibility="no" />
+
+            <LinearLayout
+                android:id="@+id/brand_header"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="16dp">
+
+                <ImageView
+                    android:id="@+id/brand_logo"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:scaleType="fitCenter"
+                    android:importantForAccessibility="no" />
+
+                <TextView
+                    android:id="@+id/title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:textSize="20sp"
+                    android:textColor="#FFFFFF"
+                    android:fontFamily="sans-serif-medium"
+                    android:includeFontPadding="false"
+                    android:gravity="start"
+                    android:maxLines="3"
+                    android:ellipsize="end" />
+            </LinearLayout>
+        </FrameLayout>
+
+        <LinearLayout
+            android:id="@+id/scan_area"
+            android:layout_width="204dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/barcode"
+                android:contentDescription="@string/membership_code"
+                android:layout_width="192dp"
+                android:layout_height="192dp"
+                android:layout_gravity="center"
+                android:scaleType="center" />
+
+            <TextView
+                android:id="@+id/card_number"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="top|center_horizontal"
+                android:textColor="#4B5563"
+                android:fontFamily="sans-serif"
+                android:textSize="12sp"
+                android:includeFontPadding="false"
+                android:maxLines="1"
+                android:textDirection="ltr"
+                android:autoSizeTextType="uniform"
+                android:autoSizeMinTextSize="9sp"
+                android:autoSizeMaxTextSize="12sp"
+                android:autoSizeStepGranularity="1sp" />
+        </LinearLayout>
+    </LinearLayout>
+</FrameLayout>

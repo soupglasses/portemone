@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+SPDX-FileCopyrightText: 2026 Sofie Finnes <sofie+git@finnes.dev>
+SPDX-License-Identifier: EUPL-1.2
+-->
+
+<resources>
+
+    <!-- The native launch window is drawn before Compose can choose its color scheme. -->
+    <style name="Theme.Wallet" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/startup_background</item>
+        <item name="android:colorBackground">@color/startup_background</item>
+        <item name="android:windowSplashScreenBackground">@color/startup_background</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+        <item name="android:windowSplashScreenIconBackgroundColor">@android:color/transparent</item>
+        <item name="android:statusBarColor">@color/startup_background</item>
+        <item name="android:navigationBarColor">@color/startup_background</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
+    </style>
+</resources>

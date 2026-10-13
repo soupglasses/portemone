@@ -1,0 +1,117 @@
+# SPDX-FileCopyrightText: 2026 Sofie Finnes <sofie+git@finnes.dev>
+# SPDX-License-Identifier: EUPL-1.2
+
+[tools]
+# Match the Java 25 daemon requirement in gradle/gradle-daemon-jvm.properties.
+java = "temurin-25.0.3"
+actionlint = "1.7.12"
+shellcheck = "0.11.0"
+shfmt = "3.13.0"
+ruff = "0.15.16"
+uv = "0.12.17"
+"pypi:reuse" = "6.2.0"
+
+[env]
+_.file = { path = ".env", redact = true }
+
+[tasks.lint]
+description = "Run Android and repository checks"
+depends = ["lint:android", "lint:repo", "lint:reuse"]
+
+[tasks."lint:reuse"]
+description = "Check source copyright and license metadata with REUSE"
+run = "reuse lint"
+
+[tasks."lint:android"]
+description = "Lint debug and release variants of both Android apps"
+run = "./gradlew --no-daemon --console=plain --stacktrace --continue --max-workers=2 :app:lintDebug :app:lintRelease :notification-companion:lintDebug :notification-companion:lintRelease"
+
+[tasks."lint:repo"]
+description = "Check workflows, shell scripts and Python scripts"
+run = [
+  "actionlint .github/workflows/*.yml",
+  "shellcheck scripts/*.sh",
+  "shfmt -d -i 4 scripts/*.sh",
+  "ruff check scripts",
+  "ruff format --check scripts",
+]
+
+[tasks.format]
+description = "Format shell and Python scripts"
+run = [
+  "shfmt -w -i 4 scripts/*.sh",
+  "ruff check --select I --fix scripts",
+  "ruff format scripts",
+]
+
+[tasks.build]
+description = "Build debug APKs for the app and companion"
+run = "./gradlew --no-daemon --console=plain --stacktrace --max-workers=2 :app:assembleDebug :notification-companion:assembleDebug"
+
+[tasks."build:ci"]
+description = "Build debug, release and instrumentation APKs for both apps"
+run = "./gradlew --no-daemon --console=plain --stacktrace --continue --max-workers=2 :app:assembleDebug :app:assembleRelease :app:assembleDebugAndroidTest :notification-companion:assembleDebug :notification-companion:assembleRelease :notification-companion:assembleDebugAndroidTest"
+
+[tasks."check:pages"]
+description = "Verify release APK native libraries and ZIP alignment for 16 KB pages"
+run = "python3 scripts/check-apk-pages.py app/build/outputs/apk/release/app-release-unsigned.apk notification-companion/build/outputs/apk/release/notification-companion-release-unsigned.apk"
+
+[tasks."test:pages"]
+description = "Test 16 KB artifact validation"
+run = "python3 scripts/test_apk_pages.py"
+
+[tasks."build:device"]
+description = "Build the main app and its instrumentation APK"
+run = "./gradlew --no-daemon --console=plain --stacktrace --max-workers=2 :app:assembleDebug :app:assembleDebugAndroidTest"
+
+[tasks.test]
+description = "Run JVM and release-script tests without an emulator (Android SDK required)"
+depends = ["test:unit", "test:release"]
+
+[tasks."test:unit"]
+description = "Run JVM tests for both apps"
+run = "./gradlew --no-daemon --console=plain --stacktrace --continue --max-workers=2 :app:testDebugUnitTest :notification-companion:testDebugUnitTest"
+
+[tasks."test:release"]
+description = "Test release packaging, signing and version checks (Android SDK required)"
+run = "python3 scripts/test_release.py"
+
+[tasks."test:device"]
+description = "Run discovered regressions on an isolated emulator: test:device -- emulator-5554"
+run = "bash scripts/test-device.sh"
+
+[tasks."test:helper"]
+description = "Test companion delegation and fallback on an API 33+ emulator: test:helper -- emulator-5554"
+run = "bash scripts/test-notification-integrations.sh"
+
+[tasks."test:location"]
+description = "Test location providers on an isolated emulator: test:location -- emulator-5554"
+run = "bash scripts/test-location-engines.sh"
+
+[tasks."test:cards"]
+description = "Test card and PKPass lifecycle on an isolated emulator: test:cards -- emulator-5554"
+run = "bash scripts/test-card-lifecycle.sh"
+
+[tasks.install]
+description = "Install the debug app (select a device with ANDROID_SERIAL)"
+run = "./gradlew --no-daemon --console=plain :app:installDebug"
+
+[tasks."install:helper"]
+description = "Install the debug companion (select a device with ANDROID_SERIAL)"
+run = "./gradlew --no-daemon --console=plain :notification-companion:installDebug"
+
+[tasks.sbom]
+description = "Generate the release dependency inventory"
+run = "./gradlew --no-daemon --console=plain --stacktrace --max-workers=2 cyclonedxBom"
+
+[tasks.release]
+description = "Build, lint, sign and package both release APKs locally"
+run = "bash scripts/release.sh"
+
+[tasks."test:emulator"]
+description = "Run all emulator suites sequentially (API 33+): test:emulator -- emulator-5554"
+run = "bash scripts/test-emulator-suite.sh"
+
+[tasks."test:all"]
+description = "Run JVM, release-script and all emulator tests: test:all -- emulator-5554"
+run = "bash scripts/test-emulator-suite.sh --all"

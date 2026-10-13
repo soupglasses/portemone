@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+SPDX-FileCopyrightText: 2026 Sofie Finnes <sofie+git@finnes.dev>
+SPDX-License-Identifier: EUPL-1.2
+-->
+
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <cache-path name="debug_reports" path="debug-exports/" />
+</paths>

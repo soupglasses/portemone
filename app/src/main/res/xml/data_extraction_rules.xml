@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+SPDX-FileCopyrightText: 2026 Sofie Finnes <sofie+git@finnes.dev>
+SPDX-License-Identifier: EUPL-1.2
+-->
+
+<data-extraction-rules>
+    <cloud-backup disableIfNoEncryptionCapabilities="true">
+        <include domain="database" path="wallet-cards.db" />
+    </cloud-backup>
+    <device-transfer>
+        <include domain="database" path="wallet-cards.db" />
+    </device-transfer>
+</data-extraction-rules>

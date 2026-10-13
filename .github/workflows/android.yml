@@ -1,0 +1,181 @@
+# SPDX-FileCopyrightText: 2026 Sofie Finnes <sofie+git@finnes.dev>
+# SPDX-License-Identifier: EUPL-1.2
+
+name: Android CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: android-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  repository-lint:
+    name: Workflow, script, and license checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Set up pinned tools
+        uses: jdx/mise-action@v5
+      - name: Check workflows and scripts
+        run: mise run lint:repo
+      - name: Check source license metadata
+        run: mise run lint:reuse
+  build:
+    name: Build, lint, and JVM tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      checks: write
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Set up build tools
+        uses: ./.github/actions/setup-android-build
+      - name: Test release signing and publishing scripts
+        run: mise run test:release
+      - name: Build both apps and test APKs
+        run: mise run build:ci
+      - name: Verify 16 KB native compatibility
+        run: |
+          mise run test:pages
+          mise run check:pages
+      - name: Run JVM tests
+        id: tests
+        run: mise run test:unit
+      - name: Publish JVM test annotations
+        id: report
+        if: ${{ !cancelled() && steps.tests.outcome != 'skipped' }}
+        uses: mikepenz/action-junit-report@v6
+        with:
+          check_name: JVM test results
+          job_name: Build, lint, and JVM tests
+          update_check: true
+          commit: ${{ github.sha }}
+          report_paths: '*/build/test-results/testDebugUnitTest/TEST-*.xml'
+          include_passed: true
+          annotate_notice: true
+          # Fork and Dependabot tokens cannot create check runs; workflow annotations still work.
+          annotate_only: ${{ github.event.pull_request.head.repo.fork == true || github.actor == 'dependabot[bot]' }}
+          check_annotations: true
+          fail_on_failure: true
+          fail_on_parse_error: true
+          require_tests: true
+          # Publish counts before the following step rejects runs without passing tests.
+          require_passed_tests: false
+          detailed_summary: true
+      - name: Reject empty or skipped test runs
+        if: ${{ !cancelled() && steps.tests.outcome != 'skipped' && (steps.report.outputs.passed == '0' || steps.report.outputs.skipped != '0') }}
+        run: |
+          echo 'Every discovered test must run and pass.' >&2
+          exit 1
+      - name: Lint both apps and build variants
+        if: ${{ !cancelled() }}
+        run: mise run lint:android
+  dependencies:
+    name: Dependency SBOM
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Set up build tools
+        uses: ./.github/actions/setup-android-build
+      - name: Generate release dependency SBOM
+        run: mise run sbom
+      - name: Summarize dependency licenses
+        run: |
+          {
+            echo '### Release dependency licenses'
+            echo 'Declared licenses from the CycloneDX SBOM; compatibility still requires review.'
+            echo
+            echo '| Dependency | Version | Declared license |'
+            echo '| --- | --- | --- |'
+            jq -r '
+              .components // [] | sort_by(.group // "", .name)[] |
+              [([.group, .name] | map(select(. != null and . != "")) | join(":")),
+               .version // "unspecified",
+               ([.licenses[]? | .expression // .license.id // .license.name // .license.url]
+                | if length == 0 then "UNDECLARED" else join(" / ") end)] |
+              map(tostring | gsub("[|\\r\\n<>]"; " ")) | "| " + join(" | ") + " |"
+            ' build/reports/cyclonedx/bom.json
+          } >> "$GITHUB_STEP_SUMMARY"
+  instrumentation:
+    name: Device regressions (API ${{ matrix.api }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        api: [31, 36]
+    permissions:
+      contents: read
+      checks: write
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Set up build tools
+        uses: ./.github/actions/setup-android-build
+      - name: Build instrumentation APKs before starting the emulator
+        run: mise run build:device
+      - name: Enable emulator acceleration
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Run discovered regression tests
+        id: tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ matrix.api }}
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          ram-size: 2048M
+          disable-animations: false
+          disable-spellchecker: true
+          # New tests run automatically. Explicit device-scenario annotations are the only exclusion.
+          script: mise run test:device -- "$(adb get-serialno)"
+      - name: Publish device test annotations
+        id: report
+        if: ${{ !cancelled() && steps.tests.outcome != 'skipped' }}
+        uses: mikepenz/action-junit-report@v6
+        with:
+          check_name: Device test results (API ${{ matrix.api }})
+          job_name: Device regressions (API ${{ matrix.api }})
+          update_check: true
+          commit: ${{ github.sha }}
+          include_passed: true
+          annotate_notice: true
+          report_paths: app/build/outputs/androidTest-results/connected/**/*.xml
+          annotate_only: ${{ github.event.pull_request.head.repo.fork == true || github.actor == 'dependabot[bot]' }}
+          check_annotations: true
+          fail_on_failure: true
+          fail_on_parse_error: true
+          require_tests: true
+          # Publish counts before the following step rejects runs without passing tests.
+          require_passed_tests: false
+          detailed_summary: true
+      - name: Reject empty or skipped test runs
+        if: ${{ !cancelled() && steps.tests.outcome != 'skipped' && (steps.report.outputs.passed == '0' || steps.report.outputs.skipped != '0') }}
+        run: |
+          echo 'Every discovered test must run and pass.' >&2
+          exit 1
