@@ -3,6 +3,8 @@
 
 package dev.finnes.portemone.notifications.integrations
 
+import dev.finnes.portemone.notifications.NotificationPreferences
+
 import android.app.Notification
 import android.app.NotificationManager
 import android.content.Context
@@ -82,7 +84,7 @@ internal class NotificationBackends(private val context: Context) {
     data class State(val ownerPackage: String, val blocked: Boolean)
 
     private fun selected(): NotificationBackend = when (notificationHost(
-        LocationSettings(context).notificationPresentation, SamsungNowBar.isSupported, SamsungNowBar.isSamsung)) {
+        NotificationPreferences(context).notificationPresentation, SamsungNowBar.isSupported, SamsungNowBar.isSamsung)) {
         NotificationHost.STANDARD -> standard
         NotificationHost.SAMSUNG -> samsung
         NotificationHost.HELPER -> companion

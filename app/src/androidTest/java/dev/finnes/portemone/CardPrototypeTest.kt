@@ -3,6 +3,8 @@
 
 package dev.finnes.portemone
 
+import dev.finnes.portemone.notifications.NotificationPreferences
+
 import dev.finnes.portemone.notifications.integrations.NotificationPresentation
 
 import dev.finnes.portemone.notifications.integrations.SamsungNowBar
@@ -45,8 +47,8 @@ class CardPrototypeTest {
     @Before
     fun isolateBuiltInNotificationStyles() {
         val settings = LocationSettings(context)
-        previousPresentation = settings.notificationPresentation
-        settings.notificationPresentation = NotificationPresentation.STANDARD
+        previousPresentation = NotificationPreferences(context).notificationPresentation
+        NotificationPreferences(context).notificationPresentation = NotificationPresentation.STANDARD
         CardNotificationManager(context).hide()
         Thread.sleep(1_000)
     }
@@ -54,7 +56,7 @@ class CardPrototypeTest {
     @After
     fun restoreNotificationHost() {
         CardNotificationManager(context).hide()
-        LocationSettings(context).notificationPresentation = previousPresentation
+        NotificationPreferences(context).notificationPresentation = previousPresentation
     }
 
     private fun postCard(
@@ -554,16 +556,16 @@ class CardPrototypeTest {
     @Test
     fun recreatedNotificationManagerRetainsSelectedAppearanceForAutomaticPosts() {
         val settings = LocationSettings(context)
-        val originalStyle = settings.notificationStyle
-        val originalPreview = settings.collapsedPreview
+        val originalStyle = NotificationPreferences(context).notificationStyle
+        val originalPreview = NotificationPreferences(context).collapsedPreview
         val manager = context.getSystemService(NotificationManager::class.java)
         try {
             for (style in CardNotificationStyle.entries) {
-                settings.notificationStyle = style
-                settings.collapsedPreview = true
+                NotificationPreferences(context).notificationStyle = style
+                NotificationPreferences(context).collapsedPreview = true
                 val recreatedSettings = LocationSettings(context)
-                assertEquals(style, recreatedSettings.notificationStyle)
-                assertTrue(recreatedSettings.collapsedPreview)
+                assertEquals(style, NotificationPreferences(context).notificationStyle)
+                assertTrue(NotificationPreferences(context).collapsedPreview)
                 assertTrue(
                     "Grant notification permission before running this test",
                     postAndAwait(SampleCard.card) {
@@ -606,8 +608,8 @@ class CardPrototypeTest {
                 if (nativePicture) assertDecodesSample(postedPicture(posted))
             }
         } finally {
-            settings.notificationStyle = originalStyle
-            settings.collapsedPreview = originalPreview
+            NotificationPreferences(context).notificationStyle = originalStyle
+            NotificationPreferences(context).collapsedPreview = originalPreview
             CardNotificationManager(context).hide()
         }
     }
@@ -654,7 +656,7 @@ class CardPrototypeTest {
 
     @Test
     fun samsungCardKeepsCompactNameSeparateFromScannableExpansion() {
-        if (SamsungNowBar.isSupported) LocationSettings(context).notificationPresentation = NotificationPresentation.AUTOMATIC
+        if (SamsungNowBar.isSupported) NotificationPreferences(context).notificationPresentation = NotificationPresentation.AUTOMATIC
         val notifications = CardNotificationManager(context)
         val manager = context.getSystemService(NotificationManager::class.java)
         try {

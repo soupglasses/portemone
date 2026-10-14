@@ -4,8 +4,6 @@
 package dev.finnes.portemone
 
 import androidx.core.content.edit
-import dev.finnes.portemone.notifications.integrations.SamsungNowBar
-import dev.finnes.portemone.notifications.integrations.NotificationPresentation
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -91,46 +89,6 @@ class LocationSettings(private val context: Context) {
             if (barcodeType != value) AppDiagnostics.event("Settings", "barcodeType=$value")
             preferences.edit { putString("type", value.name) }
         }
-    var notificationStyle: CardNotificationStyle
-        get() = if (SamsungNowBar.isSupported) CardNotificationStyle.SAMSUNG_NOW_BAR
-        else runCatching {
-            CardNotificationStyle.valueOf(
-                preferences.getString(
-                    "notification_style",
-                    null
-                ).orEmpty()
-            )
-        }
-            .getOrDefault(CardNotificationStyle.CUSTOM_CARD)
-        set(value) {
-            if (notificationStyle != value) AppDiagnostics.event(
-                "Settings",
-                "notificationStyle=$value"
-            )
-            preferences.edit { putString("notification_style", value.name) }
-        }
-    var collapsedPreview: Boolean
-        get() = preferences.getBoolean("collapsed_preview", false)
-        set(value) {
-            preferences.edit { putBoolean("collapsed_preview", value) }
-        }
-    var notificationPresentation: NotificationPresentation
-        get() = preferences.getString("notification_presentation", null)?.let {
-            runCatching { NotificationPresentation.valueOf(it) }.getOrDefault(
-                NotificationPresentation.AUTOMATIC
-            )
-        }
-            ?: if (!SamsungNowBar.isSamsung && preferences.contains("pixel_notification_compatibility") &&
-                !preferences.getBoolean("pixel_notification_compatibility", false)
-            ) NotificationPresentation.STANDARD
-            else NotificationPresentation.AUTOMATIC
-        set(value) {
-            preferences.edit {
-                putString("notification_presentation", value.name)
-                    .remove("pixel_notification_compatibility")
-            }
-        }
-
     var generation: String
         get() = preferences.getString("generation", "").orEmpty()
         set(value) {

@@ -3,6 +3,8 @@
 
 package dev.finnes.portemone
 
+import dev.finnes.portemone.notifications.NotificationPreferences
+
 import dev.finnes.portemone.notifications.integrations.NotificationPresentation
 
 import dev.finnes.portemone.notifications.integrations.CompanionNotificationClient
@@ -27,7 +29,7 @@ class CompanionNotificationDeviceTest {
         assumeTrue(mode != null && Build.MODEL.contains("sdk_gphone"))
         val context = instrumentation.targetContext
         val settings = LocationSettings(context)
-        val previous = settings.notificationPresentation
+        val previous = NotificationPreferences(context).notificationPresentation
         val notifications = CardNotificationManager(context)
         val system = context.getSystemService(NotificationManager::class.java)
         val qr = SampleCard.card.copy(
@@ -47,7 +49,7 @@ class CompanionNotificationDeviceTest {
 
         fun settle() = Thread.sleep(500)
         try {
-            settings.notificationPresentation = NotificationPresentation.AUTOMATIC
+            NotificationPreferences(context).notificationPresentation = NotificationPresentation.AUTOMATIC
             if (mode == "main-blocked") {
                 assertFalse(system.areNotificationsEnabled())
                 assertFalse(notifications.syncNearby(listOf(qr), onlyMissing = true))
@@ -184,7 +186,7 @@ class CompanionNotificationDeviceTest {
                     settle()
                     assertTrue("Leaving all stores must remove every card", active(bar).isEmpty())
                     assertTrue(notifications.show(qr))
-                    settings.notificationPresentation = NotificationPresentation.STANDARD
+                    NotificationPreferences(context).notificationPresentation = NotificationPresentation.STANDARD
                     assertTrue(notifications.show(qr))
                     settle()
                     assertEquals(
@@ -201,7 +203,7 @@ class CompanionNotificationDeviceTest {
                 )
                 settings.barcodeType = previousBarcodeType
             }
-            settings.notificationPresentation = previous
+            NotificationPreferences(context).notificationPresentation = previous
             if (mode !in setOf("qr", "barcode")) {
                 notifications.hide(qr)
                 notifications.hide(bar)

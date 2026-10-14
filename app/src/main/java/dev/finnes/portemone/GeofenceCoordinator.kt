@@ -3,6 +3,8 @@
 
 package dev.finnes.portemone
 
+import dev.finnes.portemone.notifications.NotificationPreferences
+
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.PendingIntent
@@ -32,6 +34,7 @@ class GeofenceCoordinator internal constructor(
 
     private val context = context.applicationContext
     private val settings = LocationSettings(this.context)
+    private val presentation = NotificationPreferences(context)
     fun selectedEngine(): LocationEngine = backends.resolve(settings.locationEngine)
     private fun geofences() = backends.geofences(selectedEngine())
     private fun previousGeofences() = backends.geofences(settings.registeredEngine)
@@ -368,12 +371,12 @@ class GeofenceCoordinator internal constructor(
         style: CardNotificationStyle,
         collapsedPreview: Boolean
     ) = lock.withLock {
-        if (settings.barcodeType == type && settings.notificationStyle == style &&
-            settings.collapsedPreview == collapsedPreview
+        if (settings.barcodeType == type && presentation.notificationStyle == style &&
+            presentation.collapsedPreview == collapsedPreview
         ) return@withLock
         settings.barcodeType = type
-        settings.notificationStyle = style
-        settings.collapsedPreview = collapsedPreview
+        presentation.notificationStyle = style
+        presentation.collapsedPreview = collapsedPreview
         if (settings.enabled) notifications.syncNearby(settings.activeCards())
         CardWidgetProvider.updateAll(context)
     }

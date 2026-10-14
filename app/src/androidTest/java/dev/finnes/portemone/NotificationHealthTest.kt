@@ -3,6 +3,8 @@
 
 package dev.finnes.portemone
 
+import dev.finnes.portemone.notifications.NotificationPreferences
+
 import dev.finnes.portemone.notifications.integrations.NotificationPresentation
 
 import dev.finnes.portemone.notifications.integrations.SamsungNowBar
@@ -47,13 +49,13 @@ class NotificationHealthTest {
     fun optionalCompanionHealthFollowsRealSetupAndOpensItsHelp() {
         emulatorOnly()
         val settings = LocationSettings(context)
-        val previous = settings.notificationPresentation
+        val previous = NotificationPreferences(context).notificationPresentation
         try {
-            settings.notificationPresentation = NotificationPresentation.STANDARD
+            NotificationPreferences(context).notificationPresentation = NotificationPresentation.STANDARD
             ActivityScenario.launch(NotificationHealthActivity::class.java).use {
                 compose.onNodeWithTag("health_pixel_helper").assertDoesNotExist()
             }
-            settings.notificationPresentation = NotificationPresentation.AUTOMATIC
+            NotificationPreferences(context).notificationPresentation = NotificationPresentation.AUTOMATIC
             val measured = CompanionNotificationClient(context).status()
             ActivityScenario.launch(NotificationHealthActivity::class.java).use {
                 compose.onNodeWithTag("notification_health_list")
@@ -86,7 +88,7 @@ class NotificationHealthTest {
                 )
             }
         } finally {
-            settings.notificationPresentation = previous
+            NotificationPreferences(context).notificationPresentation = previous
         }
     }
 

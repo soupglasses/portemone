@@ -3,6 +3,8 @@
 
 package dev.finnes.portemone
 
+import dev.finnes.portemone.notifications.NotificationPreferences
+
 import android.content.Context
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
@@ -22,11 +24,11 @@ class NotificationPresentationUiTest {
 
     @Test fun cardAppearanceIsAnOrdinarySettingWithOneSharedChoice() = withSavedChoice {
         val settings = LocationSettings(context)
-        settings.notificationPresentation = NotificationPresentation.STANDARD
+        NotificationPreferences(context).notificationPresentation = NotificationPresentation.STANDARD
         ActivityScenario.launch(SettingsActivity::class.java).use { activity ->
             compose.onNodeWithTag("notification_presentation_STANDARD").performScrollTo().assertIsSelected()
             compose.onNodeWithTag("notification_presentation_AUTOMATIC").performScrollTo().performClick()
-            assertEquals(NotificationPresentation.AUTOMATIC, settings.notificationPresentation)
+            assertEquals(NotificationPresentation.AUTOMATIC, NotificationPreferences(context).notificationPresentation)
             activity.recreate()
             compose.onNodeWithTag("notification_presentation_AUTOMATIC").performScrollTo().assertIsSelected()
             compose.onNodeWithText("Use compatibility cards").assertDoesNotExist()
@@ -37,12 +39,12 @@ class NotificationPresentationUiTest {
     @Test fun freshInstallDefaultsToAutomaticAndOldOptOutRemainsExplicit() = withSavedChoice {
         val preferences = context.getSharedPreferences("local_geofences", Context.MODE_PRIVATE)
         preferences.edit().remove("notification_presentation").remove("pixel_notification_compatibility").commit()
-        assertEquals(NotificationPresentation.AUTOMATIC, LocationSettings(context).notificationPresentation)
+        assertEquals(NotificationPresentation.AUTOMATIC, NotificationPreferences(context).notificationPresentation)
         if (!dev.finnes.portemone.notifications.integrations.SamsungNowBar.isSamsung) {
             preferences.edit().putBoolean("pixel_notification_compatibility", false).commit()
-            assertEquals(NotificationPresentation.STANDARD, LocationSettings(context).notificationPresentation)
+            assertEquals(NotificationPresentation.STANDARD, NotificationPreferences(context).notificationPresentation)
         }
-        LocationSettings(context).notificationPresentation = NotificationPresentation.AUTOMATIC
+        NotificationPreferences(context).notificationPresentation = NotificationPresentation.AUTOMATIC
         assertFalse(preferences.contains("pixel_notification_compatibility"))
     }
 

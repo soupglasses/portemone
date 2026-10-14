@@ -3,6 +3,8 @@
 
 package dev.finnes.portemone
 
+import dev.finnes.portemone.notifications.NotificationPreferences
+
 import androidx.compose.ui.res.stringResource
 
 import android.Manifest
@@ -38,6 +40,7 @@ class DeveloperToolsActivity : ComponentActivity() {
         val notifications = CardNotificationManager(this)
         val locations = GeofenceCoordinator(this)
         val settings = LocationSettings(this)
+        val presentation = NotificationPreferences(this)
         setContent {
             WalletTheme {
                 var revision by remember { mutableIntStateOf(0) }
@@ -58,7 +61,7 @@ class DeveloperToolsActivity : ComponentActivity() {
                 fun showDemo() {
                     status = if (notifications.show(
                             demo,
-                            settings.notificationStyle
+                            presentation.notificationStyle
                         )
                     ) getString(R.string.demo_notification_shown)
                     else getString(R.string.notifications_are_disabled_enable_them_in_android_notification_settings)
@@ -126,8 +129,8 @@ class DeveloperToolsActivity : ComponentActivity() {
                                                 try {
                                                     locations.changePresentation(
                                                         option,
-                                                        settings.notificationStyle,
-                                                        settings.collapsedPreview
+                                                        presentation.notificationStyle,
+                                                        presentation.collapsedPreview
                                                     )
                                                 } catch (cancelled: CancellationException) {
                                                     throw cancelled

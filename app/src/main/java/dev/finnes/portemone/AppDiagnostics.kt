@@ -3,6 +3,8 @@
 
 package dev.finnes.portemone
 
+import dev.finnes.portemone.notifications.NotificationPreferences
+
 import dev.finnes.portemone.notifications.integrations.SamsungNowBar
 import dev.finnes.portemone.notifications.integrations.CompanionNotificationClient
 
@@ -177,9 +179,9 @@ object AppDiagnostics {
         )
         appendLine("Overlay access: ${Settings.canDrawOverlays(context)}")
         val settings = LocationSettings(context)
-        appendLine("Style: ${settings.notificationStyle}; demo type: ${settings.barcodeType}")
+        appendLine("Style: ${NotificationPreferences(context).notificationStyle}; demo type: ${settings.barcodeType}")
         appendLine(
-            "Card presentation: ${settings.notificationPresentation}; ${
+            "Card presentation: ${NotificationPreferences(context).notificationPresentation}; ${
                 CompanionNotificationClient(
                     context
                 ).status()

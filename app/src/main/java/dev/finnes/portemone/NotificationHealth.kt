@@ -3,6 +3,8 @@
 
 package dev.finnes.portemone
 
+import dev.finnes.portemone.notifications.NotificationPreferences
+
 import dev.finnes.portemone.notifications.integrations.SamsungNowBar
 import dev.finnes.portemone.notifications.integrations.CompanionNotificationClient
 
@@ -54,6 +56,7 @@ internal class NotificationHealth(private val context: Context) {
     private val channelId = CardNotificationManager(context).channelId
     private val appName = context.getString(R.string.app_name)
     private val probes = NotificationSettingsProbe(context)
+    private val presentation = NotificationPreferences(context)
 
     private fun granted(permission: String) = ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED
 
@@ -100,7 +103,7 @@ internal class NotificationHealth(private val context: Context) {
                 listOf(context.getString(R.string.complete_the_app_notifications_card_category_precise_location_background),
                     context.getString(R.string.then_turn_on_automatic_cards_here_to_monitor_your),
                     context.getString(R.string.check_the_lock_screen_and_samsung_settings_to_choose)), HealthDestination.AUTOMATIC),
-        ) + if (locations.notificationPresentation == dev.finnes.portemone.notifications.integrations.NotificationPresentation.AUTOMATIC && !SamsungNowBar.isSamsung) {
+        ) + if (presentation.notificationPresentation == dev.finnes.portemone.notifications.integrations.NotificationPresentation.AUTOMATIC && !SamsungNowBar.isSamsung) {
             val helper = CompanionNotificationClient(context).status()
             listOf(NotificationHealthItem(
                 "pixel_helper", context.getString(R.string.full_card_notifications), helper.ready,
@@ -123,8 +126,8 @@ internal class NotificationHealth(private val context: Context) {
         val locations = LocationSettings(context)
         return listOf(
             NotificationHealthItem("samsung_integration", context.getString(R.string.full_card_notifications), SamsungNowBar.isSupported &&
-                    locations.notificationPresentation == dev.finnes.portemone.notifications.integrations.NotificationPresentation.AUTOMATIC,
-                if (SamsungNowBar.isSupported && locations.notificationPresentation != dev.finnes.portemone.notifications.integrations.NotificationPresentation.AUTOMATIC) context.getString(R.string.standard_notifications_selected_choose_automatic_in_card_appearance_for)
+                    presentation.notificationPresentation == dev.finnes.portemone.notifications.integrations.NotificationPresentation.AUTOMATIC,
+                if (SamsungNowBar.isSupported && presentation.notificationPresentation != dev.finnes.portemone.notifications.integrations.NotificationPresentation.AUTOMATIC) context.getString(R.string.standard_notifications_selected_choose_automatic_in_card_appearance_for)
                 else if (SamsungNowBar.isSupported) context.getString(R.string.samsung_card_views_configured_automatically) else context.getString(R.string.requires_a_samsung_phone_with_android_15_one_ui),
                 listOf(context.getString(R.string.automatically_includes_samsung_s_compact_and_expanded_card_views, appName),
                     context.getString(R.string.this_checks_our_app_configuration_not_samsung_s_permission)), HealthDestination.SAMSUNG),

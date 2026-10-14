@@ -3,6 +3,8 @@
 
 package dev.finnes.portemone
 
+import dev.finnes.portemone.notifications.NotificationPreferences
+
 import android.app.NotificationManager
 import android.content.Context
 import android.location.Location
@@ -88,7 +90,7 @@ class FrameworkWithoutGoogleTest {
             providerAdded = true
             locationManager.setTestProviderEnabled(LocationManager.FUSED_PROVIDER, true)
             settings.saveTestStore(StoreLocation("test", "Google-free checkout", 55.01, 12.0, 200f))
-            settings.notificationStyle = CardNotificationStyle.CUSTOM_CARD
+            NotificationPreferences(context).notificationStyle = CardNotificationStyle.CUSTOM_CARD
             assertEquals(LocationEngine.AUTOMATIC, settings.locationEngine)
             assertEquals(LocationEngine.FRAMEWORK, coordinator.selectedEngine())
             move(55.0)

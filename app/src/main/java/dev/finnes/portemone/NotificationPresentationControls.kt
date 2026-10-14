@@ -3,6 +3,8 @@
 
 package dev.finnes.portemone
 
+import dev.finnes.portemone.notifications.NotificationPreferences
+
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 
@@ -47,7 +49,7 @@ internal fun NotificationPresentationControls(settings: LocationSettings, revisi
                     val notifications = CardNotificationManager(context)
                     // Samsung and standard cards share an owner, so replace their existing layout too.
                     notifications.hide()
-                    settings.notificationPresentation = preference
+                    NotificationPreferences(context).notificationPresentation = preference
                     if (settings.enabled) notifications.syncNearby(settings.activeCards())
                     message = ""
                 }), verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {

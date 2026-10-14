@@ -207,8 +207,8 @@ class GeofenceLifecycleTest {
         locationEngine = dev.finnes.portemone.location.LocationEngine.PLAY_SERVICES
         registeredEngine = dev.finnes.portemone.location.LocationEngine.PLAY_SERVICES
         barcodeType = BarcodeType.CODE_128
-        notificationStyle = CardNotificationStyle.CUSTOM_CARD
-        collapsedPreview = false
+        dev.finnes.portemone.notifications.NotificationPreferences(context).notificationStyle = CardNotificationStyle.CUSTOM_CARD
+        dev.finnes.portemone.notifications.NotificationPreferences(context).collapsedPreview = false
         generation = "test-registration"
         registered = setOf("fixture-one-store", "fixture-two-store")
         inside = setOf("fixture-one-store")

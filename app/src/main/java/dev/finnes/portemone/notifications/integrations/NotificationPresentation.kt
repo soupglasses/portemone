@@ -3,6 +3,8 @@
 
 package dev.finnes.portemone.notifications.integrations
 
+import dev.finnes.portemone.notifications.NotificationPreferences
+
 import dev.finnes.portemone.R
 import android.content.Context
 import dev.finnes.portemone.LocationSettings
@@ -26,7 +28,7 @@ internal fun notificationHost(preference: NotificationPresentation, samsungSuppo
 internal class NotificationPresentationStatus(context: Context) {
     val helper = CompanionNotificationClient(context)
     val helperStatus = helper.status()
-    val preference = LocationSettings(context).notificationPresentation
+    val preference = NotificationPreferences(context).notificationPresentation
     val needsHelper = preference == NotificationPresentation.AUTOMATIC && !SamsungNowBar.isSamsung
     val title = when {
         preference == NotificationPresentation.STANDARD -> context.getString(R.string.using_standard_notifications)

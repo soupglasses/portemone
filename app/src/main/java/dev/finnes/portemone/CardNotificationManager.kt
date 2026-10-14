@@ -3,6 +3,8 @@
 
 package dev.finnes.portemone
 
+import dev.finnes.portemone.notifications.NotificationPreferences
+
 import dev.finnes.portemone.notifications.integrations.NotificationBackends
 
 import android.app.NotificationChannel
@@ -26,6 +28,7 @@ enum class CardNotificationStyle { NATIVE_PICTURE, CUSTOM_CARD, WIDE_EXPANDED, S
 
 class CardNotificationManager(private val context: Context) {
     private val system = context.getSystemService(NotificationManager::class.java)
+    private val presentation = NotificationPreferences(context)
     private val backends = NotificationBackends(context)
     val channelId: String = run {
         val previous = system.getNotificationChannel(LEGACY_CHANNEL)
@@ -61,7 +64,7 @@ class CardNotificationManager(private val context: Context) {
 
     fun show(
         card: Card,
-        style: CardNotificationStyle = LocationSettings(context).notificationStyle,
+        style: CardNotificationStyle = presentation.notificationStyle,
         collapsedPreview: Boolean = false,
     ): Boolean {
         if (!notificationsAllowed()) {
@@ -187,7 +190,7 @@ class CardNotificationManager(private val context: Context) {
             hide(card); return false
         }
         val settings = LocationSettings(context)
-        return show(card, settings.notificationStyle, settings.collapsedPreview)
+        return show(card, presentation.notificationStyle, presentation.collapsedPreview)
     }
 
     fun usesLowImportance() =

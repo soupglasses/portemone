@@ -3,6 +3,8 @@
 
 package dev.finnes.portemone
 
+import dev.finnes.portemone.notifications.NotificationPreferences
+
 import android.Manifest
 import android.content.Context
 import android.location.Location
@@ -59,7 +61,7 @@ class SavedCardReconciliationTest {
         repository.pendingChanges().forEach { repository.acknowledge(it) }
         settings.locationEngine = LocationEngine.FRAMEWORK
         settings.registeredEngine = LocationEngine.FRAMEWORK
-        settings.notificationPresentation = NotificationPresentation.STANDARD
+        NotificationPreferences(context).notificationPresentation = NotificationPresentation.STANDARD
         settings.saveAnchor(fix())
         settings.enabled = true
         settings.generation = "save-test"
