@@ -40,7 +40,7 @@ run_test() {
     python3 - "$report" <<'PY'
 import pathlib, re, sys
 output = pathlib.Path(sys.argv[1]).read_text()
-if not re.search(r'OK \(\d+ tests?\)', output) or 'FAILURES!!!' in output or 'INSTRUMENTATION_FAILED' in output or 'INSTRUMENTATION_STATUS_CODE: -3' in output:
+if not re.search(r'OK \([1-9]\d* tests?\)', output) or 'FAILURES!!!' in output or 'INSTRUMENTATION_FAILED' in output or 'INSTRUMENTATION_STATUS_CODE: -3' in output:
     raise SystemExit('Notification behavior tests failed: ' + sys.argv[1])
 PY
 }
