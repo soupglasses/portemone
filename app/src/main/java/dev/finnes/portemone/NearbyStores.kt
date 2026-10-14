@@ -9,7 +9,8 @@ object NearbyStores {
     fun matching(cards: List<Card>, insideStoreIds: Set<String>): List<Card> =
         cards.filter { card -> card.isUsable() && card.stores.any { it.id in insideStoreIds } }
 
-    const val LIMIT = 80
+    // Reserve one of the provider's 100 geofences for movement-triggered replacement.
+    const val LIMIT = 99
     const val REGION_RADIUS_METERS = 20_000f
 
     // A refresh can show a card immediately only when a recent fix places its
@@ -44,15 +45,13 @@ object NearbyStores {
         latitude: Double,
         longitude: Double
     ): List<StoreLocation> =
-        stores.distinctBy { it.id }.sortedWith(compareBy<StoreLocation> {
-            (distanceMeters(
-                latitude,
-                longitude,
-                it.latitude,
-                it.longitude
-            ) - it.radiusMeters).coerceAtLeast(0.0)
-        }.thenBy { distanceMeters(latitude, longitude, it.latitude, it.longitude) }
-            .thenBy { it.id }).take(LIMIT)
+        stores.distinctBy { it.id }.map { store ->
+            // Compute geodesic distance once per store, not on every sort comparison.
+            val distance = distanceMeters(latitude, longitude, store.latitude, store.longitude)
+            Triple(store, (distance - store.radiusMeters).coerceAtLeast(0.0), distance)
+        }.sortedWith(compareBy<Triple<StoreLocation, Double, Double>> { it.second }
+            .thenBy { it.third }.thenBy { it.first.id })
+            .take(LIMIT).map { it.first }
 
     // Roll dense regions sooner: a fixed 20 km anchor can otherwise leave the
     // nearest batch unchanged while the user walks past hundreds of other stores.

@@ -249,7 +249,7 @@ class LocationEngineBehaviorTest(private val engine: LocationEngine) {
     fun rollingPoolOverGoogleLimitKeepsOneMembershipVisibleUntilItsLastMatchingExit() = withEngine {
         val repository = LocalCardRepository.get(context)
         val membership = repository.cards().first { it.id == "fixture-one" }
-        val first = (1..80).map {
+        val first = (1..99).map {
             StoreLocation(
                 "contract-a-$it",
                 "First region",
@@ -258,7 +258,7 @@ class LocationEngineBehaviorTest(private val engine: LocationEngine) {
                 200f
             )
         }
-        val second = (1..80).map {
+        val second = (1..99).map {
             StoreLocation(
                 "contract-b-$it",
                 "Second region",
