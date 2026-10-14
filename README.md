@@ -50,9 +50,6 @@ imported from files; camera and image-based barcode capture are not yet supporte
 
 [Add to Obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium%3A%2F%2Fapp%2F%257B%2522id%2522%253A%2522dev.finnes.portemone%2522%252C%2522url%2522%253A%2522https%253A%252F%252Fgithub.com%252Fsoupglasses%252Fportemone%2522%252C%2522author%2522%253A%2522soupglasses%2522%252C%2522name%2522%253A%2522Portemon%25C3%25A9%2522%252C%2522additionalSettings%2522%253A%2522%257B%255C%2522apkFilterRegEx%255C%2522%253A%255C%2522%255Eportemone%255C%255C%255C%255C.apk%2524%255C%2522%257D%2522%257D) · [GitHub Releases](https://github.com/soupglasses/portemone/releases)
 
-Open the add link on your Android device. It selects the main app automatically;
-the notification companion is installed separately.
-
 </details>
 
 <!-- Publish the signed main APK as portemone.apk; the Obtainium link filters by that name. -->
@@ -63,13 +60,14 @@ See [DEVELOPMENT.md](DEVELOPMENT.md) for building, testing, signing and releases
 
 ## Privacy and license
 
-Cards and store matching stay on-device. Maps and address search use external
-services. Android backup may include wallet data; notifications may show card codes
-on the lock screen. Tapping a card notification opens its enlarged code at full
-brightness. Card details, including saved locations, require unlocking. Back closes
-the notification scanner; launching Portemoné from its app icon opens the wallet.
+Portemoné stores your cards and matches nearby stores on your device. Maps load
+from OpenStreetMap ([terms](https://osmfoundation.org/wiki/Terms_of_Use),
+[privacy policy](https://osmfoundation.org/wiki/Privacy_Policy)). When you search
+for an address, your phone may send the search to an outside service. Check
+your phone's location-service privacy policy, such as [Google's](https://policies.google.com/privacy)
+if you use Google services. Android backups may include your wallet data, and
+lock-screen notifications can display card codes.
 
-Copyright © 2026 Sofie Finnes. Original code: [EUPL 1.2](LICENSE).
-Project logo and icon artwork: [all rights reserved](LICENSES/LicenseRef-All-Rights-Reserved.txt),
-as identified by their SPDX headers or `.license` sidecars.
-[Third-party terms](THIRD_PARTY_NOTICES.md) apply separately.
+© 2026 Sofie Finnes. Original code is licensed under [EUPL 1.2](LICENSE).
+The project logo and icons are [all rights reserved](LICENSES/LicenseRef-All-Rights-Reserved.txt).
+See the [third-party notices](THIRD_PARTY_NOTICES.md) for other licenses.
