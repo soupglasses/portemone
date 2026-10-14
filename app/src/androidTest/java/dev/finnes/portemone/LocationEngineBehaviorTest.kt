@@ -3,6 +3,8 @@
 
 package dev.finnes.portemone
 
+import dev.finnes.portemone.notifications.integrations.NotificationPresentation
+
 import android.app.NotificationManager
 import android.content.Context
 import android.location.Location
@@ -373,7 +375,7 @@ class LocationEngineBehaviorTest(private val engine: LocationEngine) {
             )
             framework.setTestProviderEnabled(LocationManager.FUSED_PROVIDER, true)
             settings.notificationStyle = CardNotificationStyle.CUSTOM_CARD
-            settings.pixelCompatibilityEnabled = false
+            settings.notificationPresentation = NotificationPresentation.STANDARD
             settings.barcodeType = BarcodeType.QR_CODE
             settings.saveTestStore(StoreLocation("test", "Synthetic checkout", 55.01, 12.0, 200f))
             runBlocking { coordinator.changeEngine(engine) }

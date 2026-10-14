@@ -4,7 +4,7 @@
 package dev.finnes.portemone
 
 import dev.finnes.portemone.notifications.integrations.SamsungNowBar
-import dev.finnes.portemone.notifications.integrations.PixelNotificationCompat
+import dev.finnes.portemone.notifications.integrations.CompanionNotificationClient
 
 import dev.finnes.portemone.location.LocationEngine
 
@@ -101,7 +101,7 @@ internal class NotificationHealth(private val context: Context) {
                     context.getString(R.string.then_turn_on_automatic_cards_here_to_monitor_your),
                     context.getString(R.string.check_the_lock_screen_and_samsung_settings_to_choose)), HealthDestination.AUTOMATIC),
         ) + if (locations.notificationPresentation == dev.finnes.portemone.notifications.integrations.NotificationPresentation.AUTOMATIC && !SamsungNowBar.isSamsung) {
-            val helper = PixelNotificationCompat(context).status()
+            val helper = CompanionNotificationClient(context).status()
             listOf(NotificationHealthItem(
                 "pixel_helper", context.getString(R.string.full_card_notifications), helper.ready,
                 helper.description,
@@ -122,10 +122,10 @@ internal class NotificationHealth(private val context: Context) {
         val live = probes.samsungLive()
         val locations = LocationSettings(context)
         return listOf(
-            NotificationHealthItem("samsung_integration", context.getString(R.string.full_card_notifications), SamsungNowBar.availableForTrial &&
+            NotificationHealthItem("samsung_integration", context.getString(R.string.full_card_notifications), SamsungNowBar.isSupported &&
                     locations.notificationPresentation == dev.finnes.portemone.notifications.integrations.NotificationPresentation.AUTOMATIC,
-                if (SamsungNowBar.availableForTrial && locations.notificationPresentation != dev.finnes.portemone.notifications.integrations.NotificationPresentation.AUTOMATIC) context.getString(R.string.standard_notifications_selected_choose_automatic_in_card_appearance_for)
-                else if (SamsungNowBar.availableForTrial) context.getString(R.string.samsung_card_views_configured_automatically) else context.getString(R.string.requires_a_samsung_phone_with_android_15_one_ui),
+                if (SamsungNowBar.isSupported && locations.notificationPresentation != dev.finnes.portemone.notifications.integrations.NotificationPresentation.AUTOMATIC) context.getString(R.string.standard_notifications_selected_choose_automatic_in_card_appearance_for)
+                else if (SamsungNowBar.isSupported) context.getString(R.string.samsung_card_views_configured_automatically) else context.getString(R.string.requires_a_samsung_phone_with_android_15_one_ui),
                 listOf(context.getString(R.string.automatically_includes_samsung_s_compact_and_expanded_card_views, appName),
                     context.getString(R.string.this_checks_our_app_configuration_not_samsung_s_permission)), HealthDestination.SAMSUNG),
             NotificationHealthItem("samsung_live", context.getString(R.string.live_notifications_for_all_apps), live.ready,
@@ -166,7 +166,7 @@ internal class NotificationHealth(private val context: Context) {
         // Preference key verified in Fold4 One UI 8 SecSettings, distinct from its storage key.
         HealthDestination.DEVELOPER -> Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS)
             .highlightSettingsPreference("notification_nowbar_test")
-        HealthDestination.PIXEL_HELPER -> PixelNotificationCompat(context).let { helper ->
+        HealthDestination.PIXEL_HELPER -> CompanionNotificationClient(context).let { helper ->
             if (helper.status().installed) helper.setupIntent()
             else Intent(context, SettingsActivity::class.java)
         }

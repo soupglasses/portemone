@@ -27,7 +27,7 @@ object SamsungNowBar {
     val isSamsung: Boolean
         get() = Build.MANUFACTURER.equals("samsung", ignoreCase = true)
 
-    val availableForTrial: Boolean
+    val isSupported: Boolean
         get() = isSamsung && Build.VERSION.SDK_INT >= 35
 
     fun extras(context: Context, card: Card, expanded: RemoteViews): Bundle {
@@ -55,7 +55,7 @@ object SamsungNowBar {
 
     @Suppress("DEPRECATION")
     fun apply(context: Context, card: Card, fallback: Notification, expanded: RemoteViews): Notification {
-        if (!availableForTrial) return fallback
+        if (!isSupported) return fallback
         val samsungExtras = extras(context, card, expanded)
         fallback.extras.putAll(samsungExtras)
         return try {

@@ -21,7 +21,7 @@ import android.util.TypedValue
 import kotlin.math.roundToInt
 
 /** Optional notification host. Location and membership data remain in the modern app. */
-class PixelNotificationCompat(private val context: Context) {
+class CompanionNotificationClient(private val context: Context) {
     private val manager = context.getSystemService(NotificationManager::class.java)
 
     data class Status(

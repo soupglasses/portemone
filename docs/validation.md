@@ -94,6 +94,14 @@ placement, Pixel lock-screen presentation or scanner acceptance. Preserve the
 working Samsung integration and verify changes on a phone separately. The
 companion layout's continued support across OS releases is not guaranteed.
 
+API 37.2 preview verification found a companion rendering regression: the posted
+compact barcode was reduced from 522 to 126 pixels (48 dp), while its view retained
+the original size. The strict posted-pixel test fails. The runtime now reduces bitmap
+and encoded-data Icons; changing transport alone does not repair it. Delegation,
+permission blocks, fallback and Samsung payload tests passed on that emulator.
+Treat full-card companion rendering on this preview as unverified until corrected;
+do not infer support from a successful post.
+
 ## Cards, editing and privacy
 
 Run `mise run test:cards -- emulator-SERIAL` for storage and PKPass lifecycle

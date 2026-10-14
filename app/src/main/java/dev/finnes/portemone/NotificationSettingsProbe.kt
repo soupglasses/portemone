@@ -52,7 +52,7 @@ internal class NotificationSettingsProbe(private val context: Context) {
     }
 
     fun samsungLive(): SettingCheck {
-        if (!SamsungNowBar.availableForTrial)
+        if (!SamsungNowBar.isSupported)
             return SettingCheck(false, context.getString(R.string.this_samsung_option_is_unavailable_on_this_phone), unknown = true)
         // Verified in One UI 8's NotificationNowBarPreferenceController and read from
         // an ordinary app UID on Fold4. This is separate from per-app Now Bar access.

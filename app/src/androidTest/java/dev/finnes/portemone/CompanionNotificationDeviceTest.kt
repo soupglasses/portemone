@@ -3,7 +3,9 @@
 
 package dev.finnes.portemone
 
-import dev.finnes.portemone.notifications.integrations.PixelNotificationCompat
+import dev.finnes.portemone.notifications.integrations.NotificationPresentation
+
+import dev.finnes.portemone.notifications.integrations.CompanionNotificationClient
 
 import android.app.NotificationManager
 import android.os.Build
@@ -17,15 +19,15 @@ import org.junit.runner.RunWith
 /** Explicit companion-app integration suite; does not alter a physical phone or normal test run. */
 @RequiresDeviceSetup("scripts/test-notification-integrations.sh supplies helper delegation and permission scenarios")
 @RunWith(AndroidJUnit4::class)
-class PixelCompatibilityDeviceTest {
+class CompanionNotificationDeviceTest {
     @Test
     fun exerciseInstalledHelper() {
         val instrumentation = InstrumentationRegistry.getInstrumentation()
-        val mode = InstrumentationRegistry.getArguments().getString("pixelCompatibilityTest")
+        val mode = InstrumentationRegistry.getArguments().getString("companionNotificationTest")
         assumeTrue(mode != null && Build.MODEL.contains("sdk_gphone"))
         val context = instrumentation.targetContext
         val settings = LocationSettings(context)
-        val previous = settings.pixelCompatibilityEnabled
+        val previous = settings.notificationPresentation
         val notifications = CardNotificationManager(context)
         val system = context.getSystemService(NotificationManager::class.java)
         val qr = SampleCard.card.copy(
@@ -45,7 +47,7 @@ class PixelCompatibilityDeviceTest {
 
         fun settle() = Thread.sleep(500)
         try {
-            settings.pixelCompatibilityEnabled = true
+            settings.notificationPresentation = NotificationPresentation.AUTOMATIC
             if (mode == "main-blocked") {
                 assertFalse(system.areNotificationsEnabled())
                 assertFalse(notifications.syncNearby(listOf(qr), onlyMissing = true))
@@ -57,10 +59,10 @@ class PixelCompatibilityDeviceTest {
             } else if (mode == "blocked" || mode == "blocked-revoked") {
                 if (mode == "blocked-revoked") assertFalse(
                     system.canNotifyAsPackage(
-                        PixelNotificationCompat.PACKAGE
+                        CompanionNotificationClient.PACKAGE
                     )
                 )
-                assertTrue(PixelNotificationCompat(context).status().blocked)
+                assertTrue(CompanionNotificationClient(context).status().blocked)
                 assertFalse(notifications.show(qr))
                 settle()
                 assertTrue(
@@ -68,14 +70,14 @@ class PixelCompatibilityDeviceTest {
                     active(qr).isEmpty()
                 )
             } else if (mode == "fallback" || mode == "fallback-disabled") {
-                assertFalse(PixelNotificationCompat(context).status().ready)
+                assertFalse(CompanionNotificationClient(context).status().ready)
                 assertTrue(notifications.show(qr))
                 settle()
                 assertEquals(context.packageName, active(qr).single().packageName)
             } else if (mode == "render") {
                 settings.saveTestStore(StoreLocation("test", "Notification test", 0.0, 0.0, 200f))
                 settings.barcodeType = BarcodeType.CODE_128
-                assertTrue(PixelNotificationCompat(context).status().ready)
+                assertTrue(CompanionNotificationClient(context).status().ready)
                 // PendingIntent.send from a background test process lacks SystemUI’s
                 // user-interaction privilege. Keep the app visible for this action check.
                 val foreground =
@@ -86,7 +88,7 @@ class PixelCompatibilityDeviceTest {
                     Thread.sleep(10_000)
                     for (card in listOf(qr, bar)) {
                         val posted = active(card).single()
-                        assertEquals(PixelNotificationCompat.PACKAGE, posted.packageName)
+                        assertEquals(CompanionNotificationClient.PACKAGE, posted.packageName)
                         instrumentation.runOnMainSync {
                             for (remote in listOf(
                                 posted.notification.contentView,
@@ -160,17 +162,17 @@ class PixelCompatibilityDeviceTest {
                 }
             } else {
                 assertTrue(
-                    PixelNotificationCompat(context).status().toString(),
-                    PixelNotificationCompat(context).status().ready
+                    CompanionNotificationClient(context).status().toString(),
+                    CompanionNotificationClient(context).status().ready
                 )
                 val card = if (mode == "barcode") bar else qr
                 assertTrue(notifications.show(card))
                 settle()
-                assertEquals(PixelNotificationCompat.PACKAGE, active(card).single().packageName)
+                assertEquals(CompanionNotificationClient.PACKAGE, active(card).single().packageName)
                 if (mode == "lifecycle") {
                     assertTrue(notifications.show(bar))
                     settle()
-                    assertEquals(PixelNotificationCompat.PACKAGE, active(bar).single().packageName)
+                    assertEquals(CompanionNotificationClient.PACKAGE, active(bar).single().packageName)
                     assertTrue(notifications.syncNearby(listOf(bar), onlyMissing = true))
                     settle()
                     assertTrue(
@@ -182,7 +184,7 @@ class PixelCompatibilityDeviceTest {
                     settle()
                     assertTrue("Leaving all stores must remove every card", active(bar).isEmpty())
                     assertTrue(notifications.show(qr))
-                    settings.pixelCompatibilityEnabled = false
+                    settings.notificationPresentation = NotificationPresentation.STANDARD
                     assertTrue(notifications.show(qr))
                     settle()
                     assertEquals(
@@ -199,7 +201,7 @@ class PixelCompatibilityDeviceTest {
                 )
                 settings.barcodeType = previousBarcodeType
             }
-            settings.pixelCompatibilityEnabled = previous
+            settings.notificationPresentation = previous
             if (mode !in setOf("qr", "barcode")) {
                 notifications.hide(qr)
                 notifications.hide(bar)

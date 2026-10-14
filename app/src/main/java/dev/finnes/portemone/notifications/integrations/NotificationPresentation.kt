@@ -24,19 +24,19 @@ internal fun notificationHost(preference: NotificationPresentation, samsungSuppo
 
 /** Presentation settings describe one feature, regardless of where the card is posted. */
 internal class NotificationPresentationStatus(context: Context) {
-    val helper = PixelNotificationCompat(context)
+    val helper = CompanionNotificationClient(context)
     val helperStatus = helper.status()
     val preference = LocationSettings(context).notificationPresentation
     val needsHelper = preference == NotificationPresentation.AUTOMATIC && !SamsungNowBar.isSamsung
     val title = when {
         preference == NotificationPresentation.STANDARD -> context.getString(R.string.using_standard_notifications)
-        SamsungNowBar.availableForTrial || needsHelper && helperStatus.ready -> context.getString(R.string.using_full_card_notifications)
+        SamsungNowBar.isSupported || needsHelper && helperStatus.ready -> context.getString(R.string.using_full_card_notifications)
         needsHelper && helperStatus.blocked -> context.getString(R.string.card_notifications_are_blocked)
         else -> context.getString(R.string.using_standard_notifications)
     }
     val description = when {
         preference == NotificationPresentation.STANDARD -> context.getString(R.string.cards_use_the_regular_android_notification_layout)
-        SamsungNowBar.availableForTrial -> context.getString(R.string.full_cards_are_built_into_this_phone_lock_screen)
+        SamsungNowBar.isSupported -> context.getString(R.string.full_cards_are_built_into_this_phone_lock_screen)
         needsHelper && helperStatus.ready -> context.getString(R.string.the_card_helper_is_connected_nearby_cards_use_the)
         needsHelper && helperStatus.blocked -> context.getString(R.string.allow_notifications_for_the_card_helper_to_show_nearby)
         needsHelper -> context.getString(R.string.set_up_the_card_helper_for_full_cards_on)

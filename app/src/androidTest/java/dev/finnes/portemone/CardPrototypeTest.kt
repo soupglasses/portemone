@@ -3,6 +3,8 @@
 
 package dev.finnes.portemone
 
+import dev.finnes.portemone.notifications.integrations.NotificationPresentation
+
 import dev.finnes.portemone.notifications.integrations.SamsungNowBar
 
 import android.app.Notification
@@ -38,13 +40,13 @@ class CardPrototypeTest {
 
     private val context = InstrumentationRegistry.getInstrumentation().targetContext
 
-    private var previousPixelCompatibility = false
+    private var previousPresentation = NotificationPresentation.STANDARD
 
     @Before
     fun isolateBuiltInNotificationStyles() {
         val settings = LocationSettings(context)
-        previousPixelCompatibility = settings.pixelCompatibilityEnabled
-        settings.pixelCompatibilityEnabled = false
+        previousPresentation = settings.notificationPresentation
+        settings.notificationPresentation = NotificationPresentation.STANDARD
         CardNotificationManager(context).hide()
         Thread.sleep(1_000)
     }
@@ -52,7 +54,7 @@ class CardPrototypeTest {
     @After
     fun restoreNotificationHost() {
         CardNotificationManager(context).hide()
-        LocationSettings(context).pixelCompatibilityEnabled = previousPixelCompatibility
+        LocationSettings(context).notificationPresentation = previousPresentation
     }
 
     private fun postCard(
@@ -574,7 +576,7 @@ class CardPrototypeTest {
                 val nativePicture =
                     style == CardNotificationStyle.NATIVE_PICTURE || style == CardNotificationStyle.WIDE_EXPANDED
                 val template = posted.extras.getString(Notification.EXTRA_TEMPLATE)
-                if (style == CardNotificationStyle.SAMSUNG_NOW_BAR && SamsungNowBar.availableForTrial) {
+                if (style == CardNotificationStyle.SAMSUNG_NOW_BAR && SamsungNowBar.isSupported) {
                     assertTrue(
                         template in setOf(
                             Notification.DecoratedCustomViewStyle::class.java.name,
@@ -652,8 +654,7 @@ class CardPrototypeTest {
 
     @Test
     fun samsungCardKeepsCompactNameSeparateFromScannableExpansion() {
-        if (SamsungNowBar.availableForTrial) LocationSettings(context).pixelCompatibilityEnabled =
-            true
+        if (SamsungNowBar.isSupported) LocationSettings(context).notificationPresentation = NotificationPresentation.AUTOMATIC
         val notifications = CardNotificationManager(context)
         val manager = context.getSystemService(NotificationManager::class.java)
         try {
@@ -667,7 +668,7 @@ class CardPrototypeTest {
                 }.notification
                 // On a Pixel this exercises the Samsung payload separately; only
                 // a Samsung run can verify the actual native-style integration.
-                val extras = if (SamsungNowBar.availableForTrial) posted.extras
+                val extras = if (SamsungNowBar.isSupported) posted.extras
                 else SamsungNowBar.extras(
                     context,
                     card,

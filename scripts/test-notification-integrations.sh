@@ -50,7 +50,7 @@ helper_test() {
         "$notification_test_helper.test/androidx.test.runner.AndroidJUnitRunner"
 }
 main_test() {
-    run_test "$1" -e pixelCompatibilityTest "$1" -e class dev.finnes.portemone.PixelCompatibilityDeviceTest \
+    run_test "$1" -e companionNotificationTest "$1" -e class dev.finnes.portemone.CompanionNotificationDeviceTest \
         "$notification_test_main.test/androidx.test.runner.AndroidJUnitRunner"
 }
 cleanup() {

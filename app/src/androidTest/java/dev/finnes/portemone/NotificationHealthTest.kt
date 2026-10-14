@@ -3,8 +3,10 @@
 
 package dev.finnes.portemone
 
+import dev.finnes.portemone.notifications.integrations.NotificationPresentation
+
 import dev.finnes.portemone.notifications.integrations.SamsungNowBar
-import dev.finnes.portemone.notifications.integrations.PixelNotificationCompat
+import dev.finnes.portemone.notifications.integrations.CompanionNotificationClient
 
 import android.Manifest
 import android.app.NotificationManager
@@ -42,17 +44,17 @@ class NotificationHealthTest {
     private val notifications = context.getSystemService(NotificationManager::class.java)
 
     @Test
-    fun optionalPixelHelperHealthFollowsRealSetupAndOpensItsHelp() {
+    fun optionalCompanionHealthFollowsRealSetupAndOpensItsHelp() {
         emulatorOnly()
         val settings = LocationSettings(context)
-        val previous = settings.pixelCompatibilityEnabled
+        val previous = settings.notificationPresentation
         try {
-            settings.pixelCompatibilityEnabled = false
+            settings.notificationPresentation = NotificationPresentation.STANDARD
             ActivityScenario.launch(NotificationHealthActivity::class.java).use {
                 compose.onNodeWithTag("health_pixel_helper").assertDoesNotExist()
             }
-            settings.pixelCompatibilityEnabled = true
-            val measured = PixelNotificationCompat(context).status()
+            settings.notificationPresentation = NotificationPresentation.AUTOMATIC
+            val measured = CompanionNotificationClient(context).status()
             ActivityScenario.launch(NotificationHealthActivity::class.java).use {
                 compose.onNodeWithTag("notification_health_list")
                     .performScrollToNode(hasTestTag("health_pixel_helper"))
@@ -72,7 +74,7 @@ class NotificationHealthTest {
                     .performScrollTo().assertIsDisplayed()
                 val destination = NotificationHealth(context).intent(HealthDestination.PIXEL_HELPER)
                 assertEquals(
-                    if (measured.installed) PixelNotificationCompat.PACKAGE else context.packageName,
+                    if (measured.installed) CompanionNotificationClient.PACKAGE else context.packageName,
                     destination.component?.packageName
                 )
                 assertNotNull(
@@ -84,7 +86,7 @@ class NotificationHealthTest {
                 )
             }
         } finally {
-            settings.pixelCompatibilityEnabled = previous
+            settings.notificationPresentation = previous
         }
     }
 
@@ -131,7 +133,7 @@ class NotificationHealthTest {
             "NotificationHealthProbe",
             "NotificationManager.isOngoingActivityAllowed=$ongoing"
         )
-        if (SamsungNowBar.availableForTrial) {
+        if (SamsungNowBar.isSupported) {
             val raw = runCatching {
                 Settings.Secure.getString(
                     context.contentResolver,

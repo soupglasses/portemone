@@ -4,7 +4,7 @@
 package dev.finnes.portemone
 
 import dev.finnes.portemone.notifications.integrations.SamsungNowBar
-import dev.finnes.portemone.notifications.integrations.PixelNotificationCompat
+import dev.finnes.portemone.notifications.integrations.CompanionNotificationClient
 
 import android.Manifest
 import android.app.ActivityManager
@@ -180,7 +180,7 @@ object AppDiagnostics {
         appendLine("Style: ${settings.notificationStyle}; demo type: ${settings.barcodeType}")
         appendLine(
             "Card presentation: ${settings.notificationPresentation}; ${
-                PixelNotificationCompat(
+                CompanionNotificationClient(
                     context
                 ).status()
             }"

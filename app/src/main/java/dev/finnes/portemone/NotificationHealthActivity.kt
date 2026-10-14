@@ -7,7 +7,7 @@ import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 
 import dev.finnes.portemone.notifications.integrations.SamsungNowBar
-import dev.finnes.portemone.notifications.integrations.PixelNotificationCompat
+import dev.finnes.portemone.notifications.integrations.CompanionNotificationClient
 
 import android.content.ActivityNotFoundException
 import android.content.Intent
@@ -237,7 +237,7 @@ class NotificationHealthActivity : ComponentActivity() {
                         } else Button(onClick = { open(health.intent(help.destination)) }, modifier = Modifier.fillMaxWidth()) {
                             Text(when (help.destination) {
                                 HealthDestination.DEVELOPER -> getString(R.string.open_developer_options)
-                                HealthDestination.PIXEL_HELPER -> if (PixelNotificationCompat(this@NotificationHealthActivity).status().installed) getString(R.string.set_up_full_cards) else getString(R.string.open_notification_settings)
+                                HealthDestination.PIXEL_HELPER -> if (CompanionNotificationClient(this@NotificationHealthActivity).status().installed) getString(R.string.set_up_full_cards) else getString(R.string.open_notification_settings)
                                 else -> getString(R.string.open_android_settings)
                             })
                         }

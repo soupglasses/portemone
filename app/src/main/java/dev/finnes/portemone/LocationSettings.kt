@@ -92,7 +92,7 @@ class LocationSettings(private val context: Context) {
             preferences.edit { putString("type", value.name) }
         }
     var notificationStyle: CardNotificationStyle
-        get() = if (SamsungNowBar.availableForTrial) CardNotificationStyle.SAMSUNG_NOW_BAR
+        get() = if (SamsungNowBar.isSupported) CardNotificationStyle.SAMSUNG_NOW_BAR
         else runCatching {
             CardNotificationStyle.valueOf(
                 preferences.getString(
@@ -131,13 +131,6 @@ class LocationSettings(private val context: Context) {
             }
         }
 
-    // Retain the old accessor for existing integrations/tests while migrating stored choices.
-    internal var pixelCompatibilityEnabled: Boolean
-        get() = notificationPresentation == NotificationPresentation.AUTOMATIC
-        set(value) {
-            notificationPresentation =
-                if (value) NotificationPresentation.AUTOMATIC else NotificationPresentation.STANDARD
-        }
     var generation: String
         get() = preferences.getString("generation", "").orEmpty()
         set(value) {

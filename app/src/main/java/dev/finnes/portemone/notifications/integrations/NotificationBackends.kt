@@ -40,12 +40,12 @@ internal class SamsungNotificationBackend(private val context: Context) : Notifi
     override val ownerPackage = context.packageName
     private val manager = context.getSystemService(NotificationManager::class.java)
     override fun availability() = when {
-        !SamsungNowBar.availableForTrial -> BackendAvailability.UNAVAILABLE
+        !SamsungNowBar.isSupported -> BackendAvailability.UNAVAILABLE
         !manager.areNotificationsEnabled() -> BackendAvailability.BLOCKED
         else -> BackendAvailability.READY
     }
     override fun post(card: Card, tag: String?, id: Int, standard: () -> Notification): PostResult {
-        if (!SamsungNowBar.availableForTrial) return PostResult.UNAVAILABLE
+        if (!SamsungNowBar.isSupported) return PostResult.UNAVAILABLE
         val presented = SamsungNowBar.apply(context, card, standard(),
             NotificationCardRenderer.createSamsung(context, card))
         manager.notify(tag, id, presented)
@@ -54,9 +54,9 @@ internal class SamsungNotificationBackend(private val context: Context) : Notifi
     override fun cancel(tag: String?, id: Int) = manager.cancel(tag, id)
 }
 
-internal class PixelCompatibilityBackend(context: Context) : NotificationBackend {
-    override val ownerPackage = PixelNotificationCompat.PACKAGE
-    private val helper = PixelNotificationCompat(context)
+internal class CompanionNotificationBackend(context: Context) : NotificationBackend {
+    override val ownerPackage = CompanionNotificationClient.PACKAGE
+    private val helper = CompanionNotificationClient(context)
     override fun availability(): BackendAvailability = helper.status().let {
         when {
             it.blocked -> BackendAvailability.BLOCKED
@@ -77,15 +77,15 @@ internal class PixelCompatibilityBackend(context: Context) : NotificationBackend
 internal class NotificationBackends(private val context: Context) {
     private val standard = StandardNotificationBackend(context)
     private val samsung = SamsungNotificationBackend(context)
-    private val pixel = PixelCompatibilityBackend(context)
+    private val companion = CompanionNotificationBackend(context)
 
     data class State(val ownerPackage: String, val blocked: Boolean)
 
     private fun selected(): NotificationBackend = when (notificationHost(
-        LocationSettings(context).notificationPresentation, SamsungNowBar.availableForTrial, SamsungNowBar.isSamsung)) {
+        LocationSettings(context).notificationPresentation, SamsungNowBar.isSupported, SamsungNowBar.isSamsung)) {
         NotificationHost.STANDARD -> standard
         NotificationHost.SAMSUNG -> samsung
-        NotificationHost.HELPER -> pixel
+        NotificationHost.HELPER -> companion
     }
 
     fun state(): State {
@@ -108,7 +108,7 @@ internal class NotificationBackends(private val context: Context) {
         else {
             // A helper toggle or revoked delegation must not leave duplicate card faces.
             if (used.ownerPackage != standard.ownerPackage) standard.cancel(tag, id)
-            if (used.ownerPackage != pixel.ownerPackage) pixel.cancel(tag, id)
+            if (used.ownerPackage != companion.ownerPackage) companion.cancel(tag, id)
         }
         AppDiagnostics.event("Notification", "${card.id}: backend=${used.javaClass.simpleName}, result=$result")
         return result == PostResult.POSTED
@@ -116,13 +116,13 @@ internal class NotificationBackends(private val context: Context) {
 
     fun cancel(tag: String?, id: Int) {
         standard.cancel(tag, id)
-        pixel.cancel(tag, id)
+        companion.cancel(tag, id)
     }
 
     fun cancel(posted: StatusBarNotification) {
         when (posted.packageName) {
             standard.ownerPackage -> standard.cancel(posted.tag, posted.id)
-            pixel.ownerPackage -> pixel.cancel(posted.tag, posted.id)
+            companion.ownerPackage -> companion.cancel(posted.tag, posted.id)
         }
     }
 }
