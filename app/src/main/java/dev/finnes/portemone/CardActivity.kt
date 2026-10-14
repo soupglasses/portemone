@@ -241,205 +241,208 @@ open class CardActivity : ComponentActivity() {
                 BackHandler(enabled = enlarged || openedForScan) {
                     if (enlarged) leaveScanner() else closeCard()
                 }
-                Scaffold(
-                    containerColor = if (enlarged) Color.White else MaterialTheme.colorScheme.surfaceContainerLow,
-                    topBar = {
-                        TopAppBar(
-                            title = {
-                                Text(
-                                    "${card.brandName} ${card.cardName}",
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                            }, navigationIcon = {
-                                BackButton(onClick = { if (enlarged) leaveScanner() else closeCard() })
-                            }, actions = {
-                                if (enlarged) {
-                                    FilledTonalIconButton(
-                                        modifier = Modifier.padding(end = 8.dp).size(48.dp),
-                                        onClick = {
-                                            requestedOrientation =
-                                                if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE)
-                                                    ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
-                                                else ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
-                                        }
-                                    ) {
-                                        Icon(
-                                            painterResource(R.drawable.ic_rotate),
-                                            contentDescription = stringResource(R.string.rotate_code)
-                                        )
-                                    }
-                                }
-                            }, colors = TopAppBarDefaults.topAppBarColors(
-                                containerColor = if (enlarged) Color.White else MaterialTheme.colorScheme.surfaceContainerLow,
-                                titleContentColor = if (enlarged) Color.Black else MaterialTheme.colorScheme.onSurface
-                            )
-                        )
-                    }) { padding ->
-                    Box(Modifier.fillMaxSize().padding(padding)) {
-                        if (enlarged) {
-                            Column(
-                                Modifier.fillMaxSize().padding(vertical = 20.dp),
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.spacedBy(16.dp)
-                            ) {
-                                card.statusLabelRes()?.let { resources.getString(it) }
-                                    ?.let { Text(it, color = Color.Red, modifier = Modifier.padding(horizontal = 20.dp)) }
-                                EnlargedCode(card, Modifier.fillMaxWidth().weight(1f))
-                                Text(
-                                    card.rawValue,
-                                    modifier = Modifier.padding(horizontal = 20.dp),
-                                    color = Color.Black,
-                                    style = MaterialTheme.typography.titleMedium
-                                )
-                                Text(
-                                    stringResource(R.string.screen_brightness_increased),
-                                    modifier = Modifier.padding(horizontal = 20.dp),
-                                    color = Color.DarkGray,
-                                    style = MaterialTheme.typography.bodySmall
-                                )
-                                TextButton(onClick = { openDetails() }) { Text(stringResource(R.string.card_details)) }
-                            }
-                        } else if (!unlocked) {
-                            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                Button(onClick = { openDetails() }) { Text(stringResource(R.string.unlock_to_view_card)) }
-                            }
-                        } else {
-                            BoxWithConstraints(Modifier.fillMaxSize()) {
-                                val wide = maxWidth >= 840.dp
-
-                                @Composable
-                                fun Face(modifier: Modifier = Modifier) {
-                                    Column(
-                                        modifier.padding(horizontal = CardCarouselSidePadding),
-                                        horizontalAlignment = Alignment.CenterHorizontally,
-                                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                                    ) {
-                                        CardFace(
-                                            card,
-                                            Modifier.widthIn(max = CardFaceMaxWidth).fillMaxWidth()
-                                                .clip(RoundedCornerShape(12.dp))
-                                                .clickable(
-                                                    role = Role.Button,
-                                                    onClickLabel = getString(R.string.enlarge_code)
-                                                ) {
-                                                    if (card.barcodeType != BarcodeType.NONE) scannerRequested =
-                                                        true
-                                                }
-                                                .semantics {
-                                                    contentDescription =
-                                                        getString(
-                                                            R.string.cardactivity_enlarge_code,
-                                                            card.brandName
-                                                        )
-                                                })
-                                        if (card.barcodeType != BarcodeType.NONE) Text(
-                                            stringResource(R.string.tap_card_to_enlarge_code),
-                                            style = MaterialTheme.typography.labelMedium,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                                        )
-                                        card.statusLabelRes()?.let { resources.getString(it) }
-                                            ?.let {
-                                                Text(
-                                                    it,
-                                                    color = MaterialTheme.colorScheme.error
-                                                )
+                // Scanning uses a white surface in both system themes.
+                WalletTheme(darkTheme = !enlarged && darkTheme) {
+                    Scaffold(
+                        containerColor = if (enlarged) Color.White else MaterialTheme.colorScheme.surfaceContainerLow,
+                        topBar = {
+                            TopAppBar(
+                                title = {
+                                    Text(
+                                        "${card.brandName} ${card.cardName}",
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                }, navigationIcon = {
+                                    BackButton(onClick = { if (enlarged) leaveScanner() else closeCard() })
+                                }, actions = {
+                                    if (enlarged) {
+                                        IconButton(
+                                            modifier = Modifier.size(48.dp),
+                                            onClick = {
+                                                requestedOrientation =
+                                                    if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE)
+                                                        ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
+                                                    else ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
                                             }
-                                        if (card.id != TestCard.card.id && card.id != SampleCard.card.id) {
-                                            CardActions(
-                                                card,
-                                                management,
-                                                onDeleted = { finish() })
-                                        }
-                                        if (card.id == TestCard.card.id) TextButton(
-                                            onClick = { confirmDelete = true },
-                                            colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
                                         ) {
-                                            Text(stringResource(R.string.delete_test_card))
+                                            Icon(
+                                                painterResource(R.drawable.ic_rotate),
+                                                contentDescription = stringResource(R.string.rotate_code)
+                                            )
                                         }
                                     }
+                                }, colors = TopAppBarDefaults.topAppBarColors(
+                                    containerColor = if (enlarged) Color.White else MaterialTheme.colorScheme.surfaceContainerLow,
+                                    titleContentColor = if (enlarged) Color.Black else MaterialTheme.colorScheme.onSurface
+                                )
+                            )
+                        }) { padding ->
+                        Box(Modifier.fillMaxSize().padding(padding)) {
+                            if (enlarged) {
+                                Column(
+                                    Modifier.fillMaxSize().padding(vertical = 20.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                                ) {
+                                    card.statusLabelRes()?.let { resources.getString(it) }
+                                        ?.let { Text(it, color = Color.Red, modifier = Modifier.padding(horizontal = 20.dp)) }
+                                    EnlargedCode(card, Modifier.fillMaxWidth().weight(1f))
+                                    Text(
+                                        card.rawValue,
+                                        modifier = Modifier.padding(horizontal = 20.dp),
+                                        color = Color.Black,
+                                        style = MaterialTheme.typography.titleMedium
+                                    )
+                                    Text(
+                                        stringResource(R.string.screen_brightness_increased),
+                                        modifier = Modifier.padding(horizontal = 20.dp),
+                                        color = Color.DarkGray,
+                                        style = MaterialTheme.typography.bodySmall
+                                    )
+                                    TextButton(onClick = { openDetails() }) { Text(stringResource(R.string.card_details)) }
                                 }
+                            } else if (!unlocked) {
+                                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                    Button(onClick = { openDetails() }) { Text(stringResource(R.string.unlock_to_view_card)) }
+                                }
+                            } else {
+                                BoxWithConstraints(Modifier.fillMaxSize()) {
+                                    val wide = maxWidth >= 840.dp
 
-                                fun LazyListScope.locations() {
-                                    if (card.id != SampleCard.card.id) {
-                                        item {
-                                            Text(
-                                                stringResource(R.string.store_locations),
-                                                Modifier.walletTextColumn(),
-                                                style = MaterialTheme.typography.titleMedium
+                                    @Composable
+                                    fun Face(modifier: Modifier = Modifier) {
+                                        Column(
+                                            modifier.padding(horizontal = CardCarouselSidePadding),
+                                            horizontalAlignment = Alignment.CenterHorizontally,
+                                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                                        ) {
+                                            CardFace(
+                                                card,
+                                                Modifier.widthIn(max = CardFaceMaxWidth).fillMaxWidth()
+                                                    .clip(RoundedCornerShape(12.dp))
+                                                    .clickable(
+                                                        role = Role.Button,
+                                                        onClickLabel = getString(R.string.enlarge_code)
+                                                    ) {
+                                                        if (card.barcodeType != BarcodeType.NONE) scannerRequested =
+                                                            true
+                                                    }
+                                                    .semantics {
+                                                        contentDescription =
+                                                            getString(
+                                                                R.string.cardactivity_enlarge_code,
+                                                                card.brandName
+                                                            )
+                                                    })
+                                            if (card.barcodeType != BarcodeType.NONE) Text(
+                                                stringResource(R.string.tap_card_to_enlarge_code),
+                                                style = MaterialTheme.typography.labelMedium,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
                                             )
-                                        }
-                                        if (card.stores.isEmpty()) item {
-                                            Text(
-                                                stringResource(R.string.no_saved_locations_add_one_in_edit_card),
-                                                Modifier.walletTextColumn(),
-                                                style = MaterialTheme.typography.bodyMedium
-                                            )
-                                        }
-                                        items(card.stores, key = { "location_${it.id}" }) { store ->
-                                            SavedLocationCard(
-                                                store,
-                                                card.brandColor,
-                                                Modifier.walletTextColumn()
-                                            )
-                                        }
-                                        item {
-                                            Column(
-                                                Modifier.walletTextColumn(),
-                                                verticalArrangement = Arrangement.spacedBy(16.dp)
-                                            ) {
-                                                CardFields(card)
-                                                card.source?.let { source ->
+                                            card.statusLabelRes()?.let { resources.getString(it) }
+                                                ?.let {
                                                     Text(
-                                                        if (source.warnings.isEmpty()) getString(R.string.original_import_signature_verified_offline_revocation_was_not_checked)
-                                                        else getString(
-                                                            R.string.original_import_needs_review,
-                                                            source.warnings.joinToString(" ") {
-                                                                it.localizedPassNotice(resources)
-                                                            }),
-                                                        style = MaterialTheme.typography.bodySmall
+                                                        it,
+                                                        color = MaterialTheme.colorScheme.error
                                                     )
                                                 }
+                                            if (card.id != TestCard.card.id && card.id != SampleCard.card.id) {
+                                                CardActions(
+                                                    card,
+                                                    management,
+                                                    onDeleted = { finish() })
                                             }
-                                        }
-                                    } else item {
-                                        Text(
-                                            stringResource(R.string.demo_membership),
-                                            style = MaterialTheme.typography.bodyLarge
-                                        )
-                                    }
-                                }
-                                if (wide) {
-                                    Row(
-                                        Modifier.fillMaxSize().padding(24.dp),
-                                        horizontalArrangement = Arrangement.spacedBy(32.dp)
-                                    ) {
-                                        Face(Modifier.weight(1f))
-                                        Box(Modifier.weight(1f)) {
-                                            LazyColumn(
-                                                Modifier.fillMaxSize().testTag("card_details"),
-                                                contentPadding = PaddingValues(bottom = 24.dp),
-                                                verticalArrangement = Arrangement.spacedBy(16.dp)
+                                            if (card.id == TestCard.card.id) TextButton(
+                                                onClick = { confirmDelete = true },
+                                                colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
                                             ) {
-                                                locations()
+                                                Text(stringResource(R.string.delete_test_card))
                                             }
                                         }
                                     }
-                                } else {
-                                    LazyColumn(
-                                        Modifier.fillMaxSize().testTag("card_details"),
-                                        state = scroll,
-                                        horizontalAlignment = Alignment.CenterHorizontally,
-                                        contentPadding = PaddingValues(vertical = 20.dp),
-                                        verticalArrangement = Arrangement.spacedBy(28.dp)
-                                    ) {
-                                        item {
-                                            Face(
-                                                Modifier.widthIn(max = CardCarouselMaxWidth)
-                                                    .fillMaxWidth()
+
+                                    fun LazyListScope.locations() {
+                                        if (card.id != SampleCard.card.id) {
+                                            item {
+                                                Text(
+                                                    stringResource(R.string.store_locations),
+                                                    Modifier.walletTextColumn(),
+                                                    style = MaterialTheme.typography.titleMedium
+                                                )
+                                            }
+                                            if (card.stores.isEmpty()) item {
+                                                Text(
+                                                    stringResource(R.string.no_saved_locations_add_one_in_edit_card),
+                                                    Modifier.walletTextColumn(),
+                                                    style = MaterialTheme.typography.bodyMedium
+                                                )
+                                            }
+                                            items(card.stores, key = { "location_${it.id}" }) { store ->
+                                                SavedLocationCard(
+                                                    store,
+                                                    card.brandColor,
+                                                    Modifier.walletTextColumn()
+                                                )
+                                            }
+                                            item {
+                                                Column(
+                                                    Modifier.walletTextColumn(),
+                                                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                                                ) {
+                                                    CardFields(card)
+                                                    card.source?.let { source ->
+                                                        Text(
+                                                            if (source.warnings.isEmpty()) getString(R.string.original_import_signature_verified_offline_revocation_was_not_checked)
+                                                            else getString(
+                                                                R.string.original_import_needs_review,
+                                                                source.warnings.joinToString(" ") {
+                                                                    it.localizedPassNotice(resources)
+                                                                }),
+                                                            style = MaterialTheme.typography.bodySmall
+                                                        )
+                                                    }
+                                                }
+                                            }
+                                        } else item {
+                                            Text(
+                                                stringResource(R.string.demo_membership),
+                                                style = MaterialTheme.typography.bodyLarge
                                             )
                                         }
-                                        locations()
+                                    }
+                                    if (wide) {
+                                        Row(
+                                            Modifier.fillMaxSize().padding(24.dp),
+                                            horizontalArrangement = Arrangement.spacedBy(32.dp)
+                                        ) {
+                                            Face(Modifier.weight(1f))
+                                            Box(Modifier.weight(1f)) {
+                                                LazyColumn(
+                                                    Modifier.fillMaxSize().testTag("card_details"),
+                                                    contentPadding = PaddingValues(bottom = 24.dp),
+                                                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                                                ) {
+                                                    locations()
+                                                }
+                                            }
+                                        }
+                                    } else {
+                                        LazyColumn(
+                                            Modifier.fillMaxSize().testTag("card_details"),
+                                            state = scroll,
+                                            horizontalAlignment = Alignment.CenterHorizontally,
+                                            contentPadding = PaddingValues(vertical = 20.dp),
+                                            verticalArrangement = Arrangement.spacedBy(28.dp)
+                                        ) {
+                                            item {
+                                                Face(
+                                                    Modifier.widthIn(max = CardCarouselMaxWidth)
+                                                        .fillMaxWidth()
+                                                )
+                                            }
+                                            locations()
+                                        }
                                     }
                                 }
                             }
