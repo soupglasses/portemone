@@ -42,6 +42,7 @@ home-screen widgets and nearby-card notifications. Requires Android 12+.
 
 ## Features
 
+- Stores are listed by distance, with the closest to you first.
 - Save thousands of store locations. Android watches the ones near you for
   arrivals and departures. Portemoné updates the list as you travel.
 - The right card shows up as a scannable notification when you reach a saved
@@ -80,12 +81,17 @@ imported from files; camera and image-based barcode capture are not yet supporte
 
 ## Install
 
-[Build from source](DEVELOPMENT.md#build).
+[Download Portemoné](https://github.com/soupglasses/portemone/releases/latest/download/portemone.apk) · [All releases](https://github.com/soupglasses/portemone/releases) · [Build from source](DEVELOPMENT.md#build).
+
+For the optional Pixel/Xiaomi notification integration, also install the
+[Notification Companion](https://github.com/soupglasses/portemone/releases/latest/download/portemone-notification-companion.apk). Samsung does not need it.
 
 <details>
 <summary>Obtainium setup</summary>
 
-[Add to Obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium%3A%2F%2Fapp%2F%257B%2522id%2522%253A%2522dev.finnes.portemone%2522%252C%2522url%2522%253A%2522https%253A%252F%252Fgithub.com%252Fsoupglasses%252Fportemone%2522%252C%2522author%2522%253A%2522soupglasses%2522%252C%2522name%2522%253A%2522Portemon%25C3%25A9%2522%252C%2522additionalSettings%2522%253A%2522%257B%255C%2522apkFilterRegEx%255C%2522%253A%255C%2522%255Eportemone%255C%255C%255C%255C.apk%2524%255C%2522%257D%2522%257D) · [GitHub Releases](https://github.com/soupglasses/portemone/releases)
+[Add to Obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium%3A%2F%2Fapp%2F%257B%2522id%2522%253A%2522dev.finnes.portemone%2522%252C%2522url%2522%253A%2522https%253A%252F%252Fgithub.com%252Fsoupglasses%252Fportemone%2522%252C%2522author%2522%253A%2522soupglasses%2522%252C%2522name%2522%253A%2522Portemon%25C3%25A9%2522%252C%2522additionalSettings%2522%253A%2522%257B%255C%2522apkFilterRegEx%255C%2522%253A%255C%2522%255Eportemone%255C%255C%255C%255C.apk%2524%255C%2522%257D%2522%257D)
+
+[Add Notification Companion to Obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium%3A%2F%2Fapp%2F%257B%2522id%2522%253A%2522dev.finnes.portemone.notificationcompanion%2522%252C%2522url%2522%253A%2522https%253A%252F%252Fgithub.com%252Fsoupglasses%252Fportemone%2522%252C%2522author%2522%253A%2522soupglasses%2522%252C%2522name%2522%253A%2522Portemon%25C3%25A9%2520Notification%2520Companion%2522%252C%2522additionalSettings%2522%253A%2522%257B%255C%2522apkFilterRegEx%255C%2522%253A%255C%2522%255Eportemone-notification-companion%255C%255C%255C%255C.apk%2524%255C%2522%257D%2522%257D)
 
 </details>
 
