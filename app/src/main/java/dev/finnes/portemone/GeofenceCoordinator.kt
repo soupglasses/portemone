@@ -25,11 +25,9 @@ import dev.finnes.portemone.location.*
 class GeofenceCoordinator internal constructor(
     context: Context,
     private val backends: LocationBackends,
-    private val scheduleCardChanges: () -> Unit,
 ) {
     constructor(context: Context) : this(
-        context, LocationBackendFactory(context.applicationContext),
-        { CardChangeWork.enqueue(context.applicationContext) }
+        context, LocationBackendFactory(context.applicationContext)
     )
 
     private val context = context.applicationContext
@@ -162,52 +160,6 @@ class GeofenceCoordinator internal constructor(
             location
         }
     }
-
-    suspend fun saveStore(cardId: String, store: StoreLocation) {
-        persistCardChange(cardId) {
-            if (cardId == TestCard.card.id) {
-                val before = checkNotNull(settings.cards().find { it.id == cardId }) {
-                    context.getString(R.string.location_this_test_card_has_been_deleted)
-                }
-                settings.saveTestStore(store)
-                LocalCardRepository.get(context)
-                    .recordTestStoreChange(before, before.copy(stores = listOf(store)))
-            } else LocalCardRepository.get(context).saveStore(cardId, store)
-        }
-    }
-
-    suspend fun removeStore(cardId: String, storeId: String) {
-        if (cardId == TestCard.card.id) {
-            require(storeId == "test")
-            removeTestStore()
-            return
-        }
-        persistCardChange(cardId) { LocalCardRepository.get(context).removeStore(cardId, storeId) }
-    }
-
-    suspend fun saveCard(card: Card, originalPackage: ByteArray? = null, expected: Card? = null) {
-        persistCardChange(card.id) {
-            LocalCardRepository.get(context).saveCard(card, originalPackage, expected)
-        }
-    }
-
-    suspend fun deleteCard(card: Card) {
-        persistCardChange(card.id) { LocalCardRepository.get(context).deleteCard(card.id) }
-    }
-
-    private suspend fun persistCardChange(cardId: String, mutation: () -> Unit) =
-        withContext(Dispatchers.IO) {
-            // Saving never acquires the location coordinator's lock: a slow registration or GPS
-            // request must not delay committing a user's edit. The outbox commits with the card.
-            mutation()
-            runCatching { notifications.hide(cardId) }.onFailure {
-                AppDiagnostics.event("Cards", "Saved card cancellation will retry", it)
-            }
-            runCatching { scheduleCardChanges() }.onFailure {
-                // Application startup drains the outbox if scheduling was interrupted or failed.
-                AppDiagnostics.event("Cards", "Saved card scheduling will retry on startup", it)
-            }
-        }
 
     internal suspend fun reconcileSavedCards() = lock.withLock {
         val repository = LocalCardRepository.get(context)

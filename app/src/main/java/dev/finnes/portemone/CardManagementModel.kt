@@ -3,6 +3,8 @@
 
 package dev.finnes.portemone
 
+import dev.finnes.portemone.cards.CardWriter
+
 import android.app.Application
 import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
@@ -26,7 +28,7 @@ internal data class CardManagementState(
 
 internal class CardManagementModel(application: Application) : AndroidViewModel(application) {
     private val repository = LocalCardRepository.get(application)
-    private val coordinator = GeofenceCoordinator(application)
+    private val writer = CardWriter(application)
     private val mutable = MutableStateFlow(CardManagementState())
     val state = mutable.asStateFlow()
 
@@ -143,7 +145,7 @@ internal class CardManagementModel(application: Application) : AndroidViewModel(
         viewModelScope.launch {
             var saved = false
             try {
-                coordinator.saveCard(normalized, bytes, expected); saved = true
+                writer.saveCard(normalized, bytes, expected); saved = true
             } catch (cancelled: CancellationException) {
                 throw cancelled
             } catch (error: Exception) {
@@ -176,7 +178,7 @@ internal class CardManagementModel(application: Application) : AndroidViewModel(
         mutable.value = mutable.value.copy(busy = true, message = null)
         viewModelScope.launch {
             try {
-                coordinator.deleteCard(card); onDeleted()
+                writer.deleteCard(card); onDeleted()
             } catch (cancelled: CancellationException) {
                 throw cancelled
             } catch (_: Exception) {

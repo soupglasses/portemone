@@ -5,6 +5,8 @@ package dev.finnes.portemone
 
 import dev.finnes.portemone.notifications.NotificationPreferences
 
+import dev.finnes.portemone.cards.CardWriter
+
 import android.Manifest
 import android.content.Context
 import android.location.Location
@@ -33,7 +35,8 @@ class SavedCardReconciliationTest {
     private var savedPreferences: Map<String, *> = emptyMap<String, Any>()
     private val backend = ControlledLocationBackend()
     private var scheduled = 0
-    private val coordinator = GeofenceCoordinator(context, backend) { scheduled++ }
+    private val coordinator = GeofenceCoordinator(context, backend)
+    private val writer = CardWriter(context) { scheduled++ }
     private val card = TestMemberships.cards.first().copy(
         id = "save-reconciliation-card",
         stores = listOf(StoreLocation("save-reconciliation-store", "Store", 55.0, 12.0, 150f))
@@ -75,7 +78,9 @@ class SavedCardReconciliationTest {
         backend.release.complete(Unit)
         repository.deleteCard(card.id)
         repository.deleteCard(other.id)
-        repository.pendingChanges().filter { it.cardId == card.id || it.cardId == other.id }
+        repository.pendingChanges().filter {
+            it.cardId == card.id || it.cardId == other.id || it.cardId == TestCard.card.id
+        }
             .forEach { repository.acknowledge(it) }
         CardNotificationManager(context).hide(card)
         CardNotificationManager(context).hide(other)
@@ -97,7 +102,7 @@ class SavedCardReconciliationTest {
     fun pendingBoundaryEditCannotRearmFrameworkWithAPreRebootAnchor() {
         instrumentation.runOnMainSync {
             runBlocking {
-                coordinator.saveStore(card.id, card.stores.single().copy(radiusMeters = 250f))
+                writer.saveStore(card.id, card.stores.single().copy(radiusMeters = 250f))
                 preferences.edit().putString("registration_environment", "obsolete:receipt")
                     .putString("registration_device", "obsolete:receipt")
                     .commit()
@@ -118,7 +123,7 @@ class SavedCardReconciliationTest {
     @Test
     fun metadataSaveAndItsReconciliationNeverConsultLocation() = runBlocking {
         val updated = card.copy(cardName = "Renamed", rawValue = "001234")
-        coordinator.saveCard(updated, expected = card)
+        writer.saveCard(updated, expected = card)
         assertEquals(updated, repository.cards().first { it.id == card.id })
         assertEquals(1, scheduled)
         assertEquals(0, backend.cachedRequests)
@@ -139,7 +144,7 @@ class SavedCardReconciliationTest {
     @Test
     fun boundarySaveCompletesWhileAnOlderRegistrationIsSuspended() = runBlocking {
         val resized = card.copy(stores = listOf(card.stores.single().copy(radiusMeters = 250f)))
-        coordinator.saveCard(resized, expected = card)
+        writer.saveCard(resized, expected = card)
         assertEquals(0, backend.cachedRequests)
         assertEquals(0, backend.registrations)
         backend.blockRegistration = true
@@ -149,7 +154,7 @@ class SavedCardReconciliationTest {
             val latest =
                 resized.copy(stores = listOf(resized.stores.single().copy(radiusMeters = 350f)))
             try {
-                withTimeout(2_000) { coordinator.saveCard(latest, expected = resized) }
+                withTimeout(2_000) { writer.saveCard(latest, expected = resized) }
                 assertEquals(latest, repository.cards().first { it.id == card.id })
             } finally {
                 backend.release.complete(Unit)
@@ -169,7 +174,7 @@ class SavedCardReconciliationTest {
 
     @Test
     fun missingCachedFixClearsOnlyChangedCircleAndUsesAnchorOnlyForRegistration() = runBlocking {
-        coordinator.saveStore(card.id, card.stores.single().copy(radiusMeters = 250f))
+        writer.saveStore(card.id, card.stores.single().copy(radiusMeters = 250f))
         coordinator.reconcileSavedCards()
         assertEquals(1, backend.cachedRequests)
         assertEquals(1, backend.registrations)
@@ -182,7 +187,7 @@ class SavedCardReconciliationTest {
     fun recentAccurateCachedFixChecksOnlyEditedCard() = runBlocking {
         settings.inside = emptySet()
         backend.cached = fix()
-        coordinator.saveStore(card.id, card.stores.single().copy(radiusMeters = 250f))
+        writer.saveStore(card.id, card.stores.single().copy(radiusMeters = 250f))
         coordinator.reconcileSavedCards()
         assertEquals(setOf(card.stores.single().id), settings.inside)
         assertEquals(1, backend.cachedRequests)
@@ -198,7 +203,7 @@ class SavedCardReconciliationTest {
         fixes.forEachIndexed { index, cached ->
             backend.cached = cached
             settings.inside = setOf(card.stores.single().id, other.stores.single().id)
-            coordinator.saveStore(card.id, card.stores.single().copy(radiusMeters = 250f + index))
+            writer.saveStore(card.id, card.stores.single().copy(radiusMeters = 250f + index))
             coordinator.reconcileSavedCards()
             assertFalse(
                 "Invalid fix must not establish presence",
@@ -211,7 +216,7 @@ class SavedCardReconciliationTest {
     @Test
     fun disabledAutomaticCardsDoNotUseLocationOrRegister() = runBlocking {
         settings.enabled = false
-        coordinator.saveStore(card.id, card.stores.single().copy(radiusMeters = 250f))
+        writer.saveStore(card.id, card.stores.single().copy(radiusMeters = 250f))
         coordinator.reconcileSavedCards()
         assertEquals(0, backend.cachedRequests)
         assertEquals(0, backend.registrations)
@@ -222,7 +227,7 @@ class SavedCardReconciliationTest {
     @Test
     fun registrationFailureLeavesDurableWorkAndRetryUsesLatestData() = runBlocking {
         backend.failRegistration = true
-        coordinator.saveStore(card.id, card.stores.single().copy(radiusMeters = 250f))
+        writer.saveStore(card.id, card.stores.single().copy(radiusMeters = 250f))
         try {
             coordinator.reconcileSavedCards()
             fail("Expected the controlled registration failure")
@@ -230,7 +235,7 @@ class SavedCardReconciliationTest {
             assertEquals(card.id, repository.pendingChanges().single().cardId)
         }
         backend.failRegistration = false
-        coordinator.saveStore(card.id, card.stores.single().copy(radiusMeters = 350f))
+        writer.saveStore(card.id, card.stores.single().copy(radiusMeters = 350f))
         coordinator.reconcileSavedCards()
         assertEquals(350f, backend.stores.first { it.id == card.stores.single().id }.radiusMeters)
         assertTrue(repository.pendingChanges().isEmpty())
@@ -238,7 +243,7 @@ class SavedCardReconciliationTest {
 
     @Test
     fun homeStaysBrowsableWhileSavedBoundariesArePending() = runBlocking {
-        coordinator.saveStore(card.id, card.stores.single().copy(radiusMeters = 250f))
+        writer.saveStore(card.id, card.stores.single().copy(radiusMeters = 250f))
         val viewModels = androidx.lifecycle.ViewModelStore()
         lateinit var home: WalletHomeModel
         instrumentation.runOnMainSync {
@@ -269,8 +274,8 @@ class SavedCardReconciliationTest {
     fun uncertainCircleDoesNotPreventAnotherEditedCircleFromEstablishingPresence() = runBlocking {
         settings.inside = emptySet()
         backend.cached = fix()
-        coordinator.saveStore(card.id, card.stores.single().copy(radiusMeters = 250f))
-        coordinator.saveStore(
+        writer.saveStore(card.id, card.stores.single().copy(radiusMeters = 250f))
+        writer.saveStore(
             other.id,
             other.stores.single().copy(latitude = 55.00225, radiusMeters = 250f)
         )
@@ -286,7 +291,7 @@ class SavedCardReconciliationTest {
             backend.cached!!.elapsedRealtimeNanos =
                 SystemClock.elapsedRealtimeNanos() - 31_000_000_000L
         }
-        coordinator.saveStore(card.id, card.stores.single().copy(radiusMeters = 250f))
+        writer.saveStore(card.id, card.stores.single().copy(radiusMeters = 250f))
         coordinator.reconcileSavedCards()
         assertFalse(card.stores.single().id in settings.inside)
         assertTrue(other.stores.single().id in settings.inside)
@@ -294,7 +299,7 @@ class SavedCardReconciliationTest {
 
     @Test
     fun staleEnterCannotReactivateEditedCircleButNewEnterAndExitStillWork() = runBlocking {
-        coordinator.saveStore(card.id, card.stores.single().copy(radiusMeters = 250f))
+        writer.saveStore(card.id, card.stores.single().copy(radiusMeters = 250f))
         settings.inside = setOf(other.stores.single().id)
         coordinator.onEvent(
             StoreEvent(
@@ -315,7 +320,7 @@ class SavedCardReconciliationTest {
     @Test
     fun realBackgroundWorkerDrainsCommittedChanges() = runBlocking {
         settings.enabled = false
-        GeofenceCoordinator(context).saveCard(
+        CardWriter(context).saveCard(
             card.copy(cardName = "Background update"),
             expected = card
         )
@@ -323,6 +328,50 @@ class SavedCardReconciliationTest {
             while (repository.pendingChanges().isNotEmpty()) kotlinx.coroutines.delay(20)
         }
         assertEquals("Background update", repository.cards().first { it.id == card.id }.cardName)
+    }
+
+    @Test
+    fun deletionQueuesCleanupWithoutRemovingAnotherCardsPresence() = runBlocking {
+        writer.deleteCard(card)
+        assertFalse(repository.cards().any { it.id == card.id })
+        assertEquals(1, scheduled)
+        assertEquals(0, backend.cachedRequests)
+        assertEquals(0, backend.freshRequests)
+        val pending = repository.pendingChanges().single()
+        assertEquals(card.id, pending.cardId)
+        assertEquals(setOf(card.stores.single().id), pending.changedStoreIds)
+
+        coordinator.reconcileSavedCards()
+        assertFalse(card.stores.single().id in settings.inside)
+        assertTrue(other.stores.single().id in settings.inside)
+        assertTrue(repository.pendingChanges().isEmpty())
+        assertFalse(backend.stores.any { it.id == card.stores.single().id })
+    }
+
+    @Test
+    fun testStoreEditPersistsAndReconcilesWithoutRequestingGps() = runBlocking {
+        val original = StoreLocation("test", "Temporary store", 55.0, 12.0, 150f)
+        settings.saveTestStore(original)
+        settings.registered = settings.registered + "test"
+        settings.inside = settings.inside + "test"
+        settings.markRegistered()
+        val resized = original.copy(radiusMeters = 300f)
+
+        writer.saveStore(TestCard.card.id, resized)
+        assertEquals(resized, settings.cards().single { it.id == TestCard.card.id }.stores.single())
+        assertFalse(repository.cards().any { it.id == TestCard.card.id })
+        assertEquals(1, scheduled)
+        assertEquals(0, backend.cachedRequests)
+        val pending = repository.pendingChanges().single()
+        assertEquals(TestCard.card.id, pending.cardId)
+        assertEquals(setOf("test"), pending.changedStoreIds)
+
+        coordinator.reconcileSavedCards()
+        assertEquals(resized, backend.stores.single { it.id == "test" })
+        assertFalse("test" in settings.inside)
+        assertTrue(other.stores.single().id in settings.inside)
+        assertEquals(0, backend.freshRequests)
+        assertTrue(repository.pendingChanges().isEmpty())
     }
 
     @Test
@@ -337,7 +386,7 @@ class SavedCardReconciliationTest {
     @Test
     fun cacheFailureFallsBackToUnknownPresenceWithoutRequestingGps() = runBlocking {
         backend.failCache = true
-        coordinator.saveStore(card.id, card.stores.single().copy(radiusMeters = 250f))
+        writer.saveStore(card.id, card.stores.single().copy(radiusMeters = 250f))
         coordinator.reconcileSavedCards()
         assertFalse(card.stores.single().id in settings.inside)
         assertTrue(other.stores.single().id in settings.inside)
@@ -348,7 +397,7 @@ class SavedCardReconciliationTest {
     @Test
     fun schedulerFailureDoesNotTurnCommittedSaveIntoFailure() = runBlocking {
         val failingScheduler =
-            GeofenceCoordinator(context, backend) { error("Scheduler unavailable") }
+            CardWriter(context) { error("Scheduler unavailable") }
         failingScheduler.saveCard(card.copy(cardName = "Saved anyway"), expected = card)
         assertEquals("Saved anyway", repository.cards().first { it.id == card.id }.cardName)
         assertEquals(card.id, repository.pendingChanges().single().cardId)

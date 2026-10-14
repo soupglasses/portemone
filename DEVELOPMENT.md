@@ -26,7 +26,7 @@ Portemoné's notification settings. It has no launcher entry; Samsung does not n
 
 ## Saving cards and updating nearby notifications
 
-Card saves commit locally to SQLite. The same transaction records pending presentation
+`CardWriter` commits card saves locally to SQLite. The same transaction records pending presentation
 work in a coalescing outbox, including deletion tombstones. Save does not acquire the
 location coordinator's mutex or wait for location acquisition, geofence registration,
 or barcode rendering. It cancels the edited card's old notification through the shared

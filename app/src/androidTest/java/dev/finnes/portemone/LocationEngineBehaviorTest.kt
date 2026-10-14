@@ -3,6 +3,8 @@
 
 package dev.finnes.portemone
 
+import dev.finnes.portemone.cards.CardWriter
+
 import dev.finnes.portemone.notifications.NotificationPreferences
 
 import dev.finnes.portemone.notifications.integrations.NotificationPresentation
@@ -113,7 +115,7 @@ class LocationEngineBehaviorTest(private val engine: LocationEngine) {
         runBlocking {
             coroutineScope {
                 val save = async {
-                    coordinator.saveStore(
+                    CardWriter(context).saveStore(
                         TestCard.card.id,
                         settings.stores().single { it.id == "test" }.copy(radiusMeters = 300f)
                     )
@@ -271,7 +273,10 @@ class LocationEngineBehaviorTest(private val engine: LocationEngine) {
                 200f
             )
         }
-        val additionalCards = (first.drop(5) + second.drop(5)).chunked(MAX_CARD_LOCATIONS)
+        // This membership spans both ends of the overlapping cluster so the intermediate
+        // position leaves some of its circles while remaining inside others.
+        val firstMembershipStores = first.take(3) + first.takeLast(2)
+        val additionalCards = (first.filterNot { it in firstMembershipStores } + second.drop(5)).chunked(MAX_CARD_LOCATIONS)
             .mapIndexed { index, stores ->
                 membership.copy(
                     id = "contract-pool-$index",
@@ -282,7 +287,7 @@ class LocationEngineBehaviorTest(private val engine: LocationEngine) {
             }
         try {
             repository.saveCard(
-                membership.copy(stores = first.take(5) + second.take(5)),
+                membership.copy(stores = firstMembershipStores + second.take(5)),
                 expected = membership
             )
             additionalCards.forEach { repository.saveCard(it) }
@@ -298,7 +303,9 @@ class LocationEngineBehaviorTest(private val engine: LocationEngine) {
             awaitMoving(55.0125, 12.0, 120_000) {
                 // Complete this region replacement before beginning another trip.
                 coordinator.hasCurrentRegistration() && settings.generation != initialGeneration &&
-                        "test" !in settings.inside && settings.inside.any { it.startsWith("contract-a-") } &&
+                        "test" !in settings.inside &&
+                        firstMembershipStores.any { it.id in settings.inside } &&
+                        firstMembershipStores.any { it.id !in settings.inside } &&
                         notifications().count { it.tag == membership.id } == 1
             }
             val original = settings.generation
