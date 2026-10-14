@@ -14,6 +14,17 @@ SPDX-License-Identifier: EUPL-1.2
 An Android wallet for loyalty cards, with PKPass import, scannable codes,
 home-screen widgets and nearby-card notifications. Requires Android 12+.
 
+## Features
+
+- Save thousands of store locations. Android watches the ones near you for
+  arrivals and departures. Portemoné updates the list as you travel.
+- The right card shows up as a scannable notification when you reach a saved
+  store, usually within minutes. Scan it from your lock screen at checkout.
+  The notification goes away when you leave.
+- Add cards yourself or import Apple Wallet passes. Choose how close you need
+  to be for each store's card to appear. A home screen widget can show the
+  nearby card's code, too.
+
 ## Tested devices
 
 Full-card notifications show the card’s branding and scannable code. The optional `notification-companion` supports full-card
