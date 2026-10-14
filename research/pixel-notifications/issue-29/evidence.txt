@@ -22,3 +22,9 @@ modules including configured margins. At 990px it can use 2px per module.
 A 995px renderer probe produced 950px of bars with 22/23px white margins.
 That probe is a bitmap measurement, not a deployed layout fix.
 No physical checkout scanner was tested.
+
+Padding removal and explicit Rotate control, API 36 isolated Pixel 8 emulator:
+padding-portrait.png: 950px bar span. padding-landscape.png: 1900px bar span.
+Both unedited screenshots decode to the same synthetic value with ZXing 3.5.3.
+Rotation UI test verifies portrait/landscape return and restores normal orientation
+when leaving the enlarged screen. Physical scanner testing remains outstanding.
