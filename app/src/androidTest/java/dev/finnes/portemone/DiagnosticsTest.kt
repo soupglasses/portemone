@@ -14,6 +14,7 @@ import androidx.core.content.FileProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import dev.finnes.portemone.cards.LocalCardRepository
 import dev.finnes.portemone.diagnostics.AppDiagnostics
+import kotlinx.coroutines.test.StandardTestDispatcher
 import java.io.File
 import java.time.Instant
 import java.util.UUID
@@ -26,7 +27,9 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class DiagnosticsTest {
     @get:Rule
-    val compose = createAndroidComposeRule<DebugActivity>()
+    // Queue I/O completions for the Compose test clock instead of allowing the
+    // default unconfined dispatcher to resume recomposition on an I/O worker.
+    val compose = createAndroidComposeRule<DebugActivity>(StandardTestDispatcher())
 
     @Test
     fun copyAllIncludesFilteredOutEventsAndDeviceState() {
