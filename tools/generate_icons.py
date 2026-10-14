@@ -20,6 +20,13 @@ ANGLE = radians(-11)
 # Launcher and status glyph share the accepted short-tail silhouette.
 PIN = "M54,24.55C40.75,24.55 30,35.3 30,48.55C30,60 47,71.5 52.1,76Q54,77.8 55.9,76C61,71.5 78,60 78,48.55C78,35.3 67.25,24.55 54,24.55Z"
 MARK_OFFSET_Y = 3.275
+ADAPTIVE_SAFE_DIAMETER = 66.0
+# Optical padding keeps the tilted card comfortably inside circular OEM masks.
+ARTWORK_INSET = 4.0
+# The rotated card and its shadow reach farther than the pin's vertical bounds.
+# Their painted radius after recentering is 29.0077; leave room for rasterization.
+ARTWORK_RADIUS = 29.01
+LAUNCHER_SCALE = (ADAPTIVE_SAFE_DIAMETER / 2 - ARTWORK_INSET) / ARTWORK_RADIUS
 
 
 def point(x, y):
@@ -96,7 +103,11 @@ body += path(HEADING + STAMPS + EMPTY_STAMP, "#482044")
 # Recenter the whole mark so shortening the tail cannot misalign the card.
 write(
     "ic_launcher_foreground",
-    f'<group android:translateY="{MARK_OFFSET_Y}">\n' + body + "</group>\n",
+    f'<group android:scaleX="{LAUNCHER_SCALE:.6f}" android:scaleY="{LAUNCHER_SCALE:.6f}" '
+    'android:pivotX="54" android:pivotY="54">\n'
+    + f'<group android:translateY="{MARK_OFFSET_Y}">\n'
+    + body
+    + "</group></group>\n",
 )
 
 # A plain outer silhouette clip contains the oversized subtraction. The void
@@ -106,7 +117,11 @@ mono += path(PIN + CUTOUT, "#FFFFFF") + "</group>\n" + path(CARD + INNER, "#FFFF
 mono += path(HEADING + STAMPS + EMPTY_STAMP, "#FFFFFF")
 write(
     "ic_launcher_monochrome",
-    f'<group android:translateY="{MARK_OFFSET_Y}">\n' + mono + "</group>\n",
+    f'<group android:scaleX="{LAUNCHER_SCALE:.6f}" android:scaleY="{LAUNCHER_SCALE:.6f}" '
+    'android:pivotX="54" android:pivotY="54">\n'
+    + f'<group android:translateY="{MARK_OFFSET_Y}">\n'
+    + mono
+    + "</group></group>\n",
 )
 
 # At status-bar sizes, fine outlines and hollow stamps disappear. Keep the
@@ -129,7 +144,7 @@ write(
 (RES / "ic_launcher_background.xml").write_text(f"""<?xml version="1.0" encoding="utf-8"?>
 {ASSET_HEADER}
 <shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
-    <solid android:color="#211D47" />
+    <solid android:color="@color/brand_icon_background" />
 </shape>
 """)
 

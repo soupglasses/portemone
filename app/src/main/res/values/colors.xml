@@ -6,4 +6,5 @@ SPDX-License-Identifier: EUPL-1.2
 
 <resources>
     <color name="startup_background">@android:color/system_neutral2_10</color>
+    <color name="brand_icon_background">#211D47</color>
 </resources>

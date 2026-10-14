@@ -21,16 +21,37 @@ import kotlin.math.sin
 /** Exercise Android's vector renderer: an SVG preview cannot detect native clipping differences. */
 @RunWith(AndroidJUnit4::class)
 class IconRenderingTest {
+    private val launcherScale = 29.0 / 29.01
     private data class Icon(val resource: Int, val name: String, val scale: Double, val offsetY: Double = 0.0)
     private data class Point(val x: Double, val y: Double)
     private val icons = listOf(
         Icon(R.drawable.ic_card, "notification", 1.6, 3.275),
-        Icon(R.drawable.ic_launcher_monochrome, "themed", 1.0, 3.275),
+        Icon(R.drawable.ic_launcher_monochrome, "themed", launcherScale, 3.275),
     )
     private val angle = Math.toRadians(-11.0)
 
+    @Test fun launcherArtworkFitsTheSafeCircleForEveryDeviceMask() {
+        val size = 432
+        val center = size / 2.0
+        val safeRadius = size * 33.0 / 108.0
+        for (resource in listOf(R.drawable.ic_launcher_foreground, R.drawable.ic_launcher_monochrome)) {
+            val bitmap = render(Icon(resource, "safe-circle-$resource", launcherScale), size)
+            try {
+                for (y in 0 until size) for (x in 0 until size) {
+                    if (Color.alpha(bitmap.getPixel(x, y)) <= 10) continue
+                    val dx = x + .5 - center
+                    val dy = y + .5 - center
+                    assertTrue("Launcher artwork at ($x, $y) exceeds the OEM safe circle",
+                        dx * dx + dy * dy <= safeRadius * safeRadius)
+                }
+            } finally {
+                bitmap.recycle()
+            }
+        }
+    }
+
     @Test fun cardCavityRemainsTransparentAtNotificationAndLauncherSizes() {
-        render(Icon(R.drawable.ic_launcher_foreground, "foreground", 1.0), 108).recycle()
+        render(Icon(R.drawable.ic_launcher_foreground, "foreground", launcherScale), 108).recycle()
         render(Icon(R.mipmap.ic_launcher, "adaptive", 1.0), 216).recycle()
         for (icon in icons) for (size in if (icon.name == "notification") listOf(16, 24, 64, 108) else listOf(24, 64, 108)) {
             val bitmap = render(icon, size)
