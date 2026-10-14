@@ -75,6 +75,35 @@ class StoreLocationEditorTest {
     }
 
     @Test
+    fun openLocationDraftSurvivesRecreationWithInvalidCoordinates() = withCard { card ->
+        edit(card).use { scenario ->
+            openArea()
+            compose.onNodeWithText("Store name").performTextReplacement("Unfinished store")
+            compose.onNodeWithText("Meters").performScrollTo().performTextReplacement("075")
+            compose.onNodeWithText("Edit exact coordinates").performScrollTo().performClick()
+            compose.onNodeWithText("Latitude").performScrollTo().performTextReplacement("-")
+            scenario.recreate()
+            await("Save changes")
+            compose.onNodeWithText("Latitude").performScrollTo().assertTextContains("-")
+            compose.onNodeWithText("Meters").performScrollTo().assertTextContains("075")
+            compose.onNodeWithText("Store name").performScrollTo()
+                .assertTextContains("Unfinished store")
+            compose.onNodeWithText("Save changes").performClick()
+            compose.onNodeWithText("Save changes").assertIsDisplayed()
+            assertEquals(card.stores, saved(card).stores)
+            compose.onNodeWithText("Latitude").performScrollTo().performTextReplacement("55.7")
+            compose.onNodeWithText("Save changes").performClick()
+            compose.onNodeWithText("Save", substring = false).performClick()
+            compose.waitUntil(8_000) { saved(card).stores.single().name == "Unfinished store" }
+            assertEquals(
+                card.stores.single().copy(name = "Unfinished store", latitude = 55.7,
+                    radiusMeters = 75f, address = null),
+                saved(card).stores.single()
+            )
+        }
+    }
+
+    @Test
     fun removingLocationThenDiscardingCardKeepsSavedLocation() = withCard { card ->
         edit(card).use {
             openArea()

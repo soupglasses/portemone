@@ -6,8 +6,10 @@ package dev.finnes.portemone
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 
+import dev.finnes.portemone.cards.editor.AndroidLocationEditorSource
+import dev.finnes.portemone.cards.editor.LocationEditorState
+
 import android.Manifest
-import android.location.Geocoder
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.compose.BackHandler
@@ -29,12 +31,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.util.Locale
-import java.util.UUID
 import kotlin.math.roundToInt
 
 @Composable
@@ -238,99 +235,37 @@ private fun LocationEditor(
 ) {
     val resources = LocalResources.current
     val context = LocalContext.current
-    val manager = remember(context) { GeofenceCoordinator(context) }
+    val source = remember(context) { AndroidLocationEditorSource(context) }
     val scope = rememberCoroutineScope()
-    val draftId = rememberSaveable { original?.id ?: UUID.randomUUID().toString() }
-    var address by rememberSaveable { mutableStateOf(original?.address) }
-    var name by rememberSaveable { mutableStateOf(original?.name.orEmpty()) }
-    var latitude by rememberSaveable {
-        mutableStateOf(
-            (original?.latitude ?: anchor?.latitude)?.toString().orEmpty()
-        )
-    }
-    var longitude by rememberSaveable {
-        mutableStateOf(
-            (original?.longitude ?: anchor?.longitude)?.toString().orEmpty()
-        )
-    }
-    var radius by rememberSaveable {
-        mutableStateOf(
-            (original?.radiusMeters ?: 150f).toString().removeSuffix(".0")
-        )
+    val state = rememberSaveable(saver = LocationEditorState.saver(original, anchor)) {
+        LocationEditorState(original, anchor)
     }
     var coordinatesOpen by rememberSaveable { mutableStateOf(false) }
     var discard by remember { mutableStateOf(false) }
     var deleting by remember { mutableStateOf(false) }
-    var error by rememberSaveable { mutableStateOf<String?>(null) }
     var attempted by remember { mutableStateOf(false) }
-    var search by rememberSaveable { mutableStateOf("") }
-    var searching by remember { mutableStateOf(false) }
-    var searchError by remember { mutableStateOf<String?>(null) }
-    var searchResults by remember { mutableStateOf<List<StoreSearchResult>>(emptyList()) }
-    var mapPositionRevision by remember { mutableIntStateOf(0) }
-    val lat = latitude.toDoubleOrNull()?.takeIf { it.isFinite() && it in -90.0..90.0 }
-    val lon = longitude.toDoubleOrNull()?.takeIf { it.isFinite() && it in -180.0..180.0 }
-    val meters = radius.toFloatOrNull()?.takeIf { it.isFinite() && it in StoreRadiusRange }
-    val valid = name.isNotBlank() && lat != null && lon != null && meters != null
-    val draft = StoreLocation(
-        draftId,
-        name.trim(),
-        lat ?: 0.0,
-        lon ?: 0.0,
-        meters ?: 150f,
-        original?.origin ?: LocationOrigin.USER, address
-    )
-    val dirty = original?.let { saved ->
-        name.trim() != saved.name || lat != saved.latitude || lon != saved.longitude || meters != saved.radiusMeters || address != saved.address
-    } ?: (name.isNotBlank() || search.isNotBlank() || lat != anchor?.latitude ||
-            lon != anchor?.longitude || meters != 150f)
 
     fun close() {
-        if (dirty) discard = true else onClose()
-    }
-
-    fun changePosition(newLat: Double, newLon: Double) {
-        address = null
-        latitude = "%.6f".format(Locale.US, newLat)
-        longitude = "%.6f".format(Locale.US, newLon)
+        if (state.dirty) discard = true else onClose()
     }
 
     fun save() {
         attempted = true
-        if (lat == null || lon == null) coordinatesOpen = true
-        if (!valid) return
-        onSave(draft)
+        if (state.lat == null || state.lon == null) coordinatesOpen = true
+        if (!state.valid) return
+        onSave(state.draft)
     }
 
-    var locating by remember { mutableStateOf(false) }
-    var positionRevision by rememberSaveable { mutableIntStateOf(0) }
-    var locationRequest by remember { mutableIntStateOf(if (lat == null && lon == null && manager.hasPreciseLocation()) 1 else 0) }
+    var locationRequest by remember {
+        mutableIntStateOf(if (state.lat == null && state.lon == null && source.hasPreciseLocation()) 1 else 0)
+    }
     val permission =
         rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
-            if (manager.hasPreciseLocation()) locationRequest++
-            else error =
-                resources.getString(R.string.location_permission_was_not_granted_search_an_address_or)
+            if (source.hasPreciseLocation()) locationRequest++
+            else state.error = R.string.location_permission_was_not_granted_search_an_address_or
         }
     LaunchedEffect(locationRequest) {
-        if (locationRequest == 0) return@LaunchedEffect
-        val revision = positionRevision
-        locating = true
-        error = null
-        try {
-            val position = manager.currentLocation(maxAgeMillis = 0)
-            // A delayed fix must not replace a pin the user has already placed.
-            if (positionRevision == revision) {
-                changePosition(position.latitude, position.longitude)
-                mapPositionRevision++
-            }
-        } catch (cancelled: CancellationException) {
-            throw cancelled
-        } catch (_: Exception) {
-            error =
-                resources.getString(R.string.could_not_find_your_location_try_again_search_an)
-        } finally {
-            locating = false
-        }
+        if (locationRequest != 0) state.locate(source::currentPosition)
     }
 
     Dialog(
@@ -356,80 +291,48 @@ private fun LocationEditor(
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         OutlinedTextField(
-                            value = name,
-                            onValueChange = { name = it },
+                            value = state.name,
+                            onValueChange = { state.name = it },
                             label = { Text(stringResource(R.string.store_name)) },
                             singleLine = true,
                             modifier = Modifier.fillMaxWidth(),
-                            isError = attempted && name.isBlank()
+                            isError = attempted && state.name.isBlank()
                         )
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             OutlinedTextField(
-                                value = search,
-                                onValueChange = { search = it },
+                                value = state.search,
+                                onValueChange = { state.search = it },
                                 label = { Text(stringResource(R.string.search_an_address_or_store)) },
                                 modifier = Modifier.weight(1f),
                                 singleLine = true,
-                                enabled = !searching
+                                enabled = !state.searching
                             )
-                            TextButton(enabled = search.isNotBlank() && !searching, onClick = {
-                                scope.launch {
-                                    searching = true; searchError = null; searchResults =
-                                    emptyList()
-                                    try {
-                                        val results = withContext(Dispatchers.IO) {
-                                            @Suppress("DEPRECATION")
-                                            Geocoder(context).getFromLocationName(search.trim(), 4)
-                                                .orEmpty().map {
-                                                    StoreSearchResult(
-                                                        it.getAddressLine(0) ?: search,
-                                                        it.latitude,
-                                                        it.longitude
-                                                    )
-                                                }
-                                        }
-                                        searchResults = results
-                                        if (results.isEmpty()) searchError =
-                                            resources.getString(R.string.no_result_try_a_street_and_city_or_place)
-                                    } catch (cancelled: CancellationException) {
-                                        throw cancelled
-                                    } catch (_: Exception) {
-                                        searchError =
-                                            resources.getString(R.string.search_is_unavailable_place_the_pin_on_the_map)
-                                    } finally {
-                                        searching = false
-                                    }
-                                }
-                            }) { Text(if (searching) resources.getString(R.string.finding) else resources.getString(R.string.find)) }
+                            TextButton(enabled = state.search.isNotBlank() && !state.searching, onClick = {
+                                scope.launch { state.find(source::search) }
+                            }) { Text(if (state.searching) resources.getString(R.string.finding) else resources.getString(R.string.find)) }
                         }
-                        TextButton(enabled = !locating, onClick = {
-                            if (manager.hasPreciseLocation()) locationRequest++
+                        TextButton(enabled = !state.locating, onClick = {
+                            if (source.hasPreciseLocation()) locationRequest++
                             else permission.launch(
                                 arrayOf(
                                     Manifest.permission.ACCESS_COARSE_LOCATION,
                                     Manifest.permission.ACCESS_FINE_LOCATION
                                 )
                             )
-                        }) { Text(if (locating) resources.getString(R.string.finding_your_location) else resources.getString(R.string.use_my_location)) }
-                        searchError?.let {
+                        }) { Text(if (state.locating) resources.getString(R.string.finding_your_location) else resources.getString(R.string.use_my_location)) }
+                        state.searchError?.let {
                             Text(
-                                it,
+                                stringResource(it),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
-                        searchResults.forEach { result ->
+                        state.searchResults.forEach { result ->
                             TextButton(onClick = {
-                                positionRevision++; changePosition(
-                                result.latitude,
-                                result.longitude
-                            )
-                                address = result.label
-                                if (name.isBlank()) name = search.trim()
-                                searchResults = emptyList(); mapPositionRevision++
+                                state.selectResult(result)
                             }, modifier = Modifier.fillMaxWidth()) {
                                 Text(
                                     result.label,
@@ -438,19 +341,16 @@ private fun LocationEditor(
                             }
                         }
                     }
-                    if (lat != null && lon != null) key(mapPositionRevision) {
+                    if (state.lat != null && state.lon != null) key(state.mapPositionRevision) {
                         Box(Modifier.fillMaxWidth().height(280.dp)) {
                             StoreMap(
-                                listOf(draft),
-                                draft.id,
+                                listOf(state.draft),
+                                state.draft.id,
                                 brandColor,
                                 Modifier.fillMaxSize(),
                                 interactive = true,
                                 onPlace = { newLat, newLon ->
-                                    positionRevision++; changePosition(
-                                    newLat,
-                                    newLon
-                                )
+                                    state.placePin(newLat, newLon)
                                 })
                             Surface(
                                 Modifier.align(Alignment.TopCenter).padding(12.dp),
@@ -480,18 +380,18 @@ private fun LocationEditor(
                                 )
                             }
                             OutlinedTextField(
-                                value = radius,
-                                onValueChange = { radius = it },
+                                value = state.radius,
+                                onValueChange = { state.radius = it },
                                 modifier = Modifier.width(112.dp),
                                 singleLine = true,
                                 label = { Text(stringResource(R.string.meters)) },
                                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                isError = attempted && meters == null
+                                isError = attempted && state.meters == null
                             )
                         }
                         Slider(
-                            value = (meters ?: 150f).coerceIn(100f, 500f),
-                            onValueChange = { radius = ((it / 10).roundToInt() * 10).toString() },
+                            value = (state.meters ?: 150f).coerceIn(100f, 500f),
+                            onValueChange = { state.radius = ((it / 10).roundToInt() * 10).toString() },
                             valueRange = 100f..500f,
                             modifier = Modifier.fillMaxWidth()
                         )
@@ -500,7 +400,7 @@ private fun LocationEditor(
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
-                        if (attempted && meters == null) Text(
+                        if (attempted && state.meters == null) Text(
                             stringResource(R.string.choose_a_radius_between_50_and_1_000_meters),
                             color = MaterialTheme.colorScheme.error,
                             style = MaterialTheme.typography.bodySmall
@@ -511,36 +411,36 @@ private fun LocationEditor(
                         if (coordinatesOpen) {
                             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                                 OutlinedTextField(
-                                    value = latitude,
+                                    value = state.latitude,
                                     onValueChange = {
-                                        positionRevision++; address = null; latitude = it
+                                        state.editLatitude(it)
                                     },
                                     label = { Text(stringResource(R.string.latitude)) },
                                     modifier = Modifier.weight(1f),
                                     singleLine = true,
                                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-                                    isError = attempted && lat == null
+                                    isError = attempted && state.lat == null
                                 )
                                 OutlinedTextField(
-                                    value = longitude,
+                                    value = state.longitude,
                                     onValueChange = {
-                                        positionRevision++; address = null; longitude = it
+                                        state.editLongitude(it)
                                     },
                                     label = { Text(stringResource(R.string.longitude)) },
                                     modifier = Modifier.weight(1f),
                                     singleLine = true,
                                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-                                    isError = attempted && lon == null
+                                    isError = attempted && state.lon == null
                                 )
                             }
                             TextButton(
-                                onClick = { mapPositionRevision++ },
-                                enabled = lat != null && lon != null
+                                onClick = { state.centerMap() },
+                                enabled = state.lat != null && state.lon != null
                             ) { Text(stringResource(R.string.center_map_on_coordinates)) }
                         }
-                        error?.let {
+                        state.error?.let {
                             Text(
-                                it,
+                                stringResource(it),
                                 color = MaterialTheme.colorScheme.error,
                                 style = MaterialTheme.typography.bodyMedium
                             )
@@ -573,5 +473,3 @@ private fun LocationEditor(
         },
         dismissButton = { TextButton(onClick = { deleting = false }) { Text(stringResource(R.string.cancel)) } })
 }
-
-private data class StoreSearchResult(val label: String, val latitude: Double, val longitude: Double)
