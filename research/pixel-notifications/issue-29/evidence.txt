@@ -1,0 +1,24 @@
+SPDX-FileCopyrightText: 2026 Sofie Finnes <sofie+git@finnes.dev>
+SPDX-License-Identifier: EUPL-1.2
+
+Issue: https://github.com/soupglasses/portemone/issues/29
+Pixel 8 emulator, API 37.2, CP41.260831.007, density 420 dpi.
+Synthetic CODE_128: A7B3C9D2E8F4G6H5J1K0L2M4N6P8Q0R3S5T7U9V1
+Unedited device screenshots, captured 2026-10-14.
+
+barcode-before.png: production companion notification.
+barcode-after.png: temporary bounded PNG-data prototype (840x396 expanded).
+The prototype addresses image reduction, not horizontal space utilization.
+Whole-screenshot ZXing 3.5.3 decoding: before NOT_FOUND, after exact match.
+
+normal-card.png: production app card, bitmap 891px, bars 475px,
+208px white space on each side.
+normal-enlarged.png: production enlarged display, bitmap 974px, bars 475px,
+249/250px white space on either side.
+Both app screenshots decode to the exact synthetic value with ZXing 3.5.3.
+
+The shared encoder uses whole-pixel module scaling. This value needs 495
+modules including configured margins. At 990px it can use 2px per module.
+A 995px renderer probe produced 950px of bars with 22/23px white margins.
+That probe is a bitmap measurement, not a deployed layout fix.
+No physical checkout scanner was tested.
