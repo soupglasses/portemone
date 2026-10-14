@@ -37,14 +37,14 @@ internal data class NotificationHealthItem(
     val requiredForAutomatic: Boolean get() = id in setOf("notifications", "channel", "precise", "background", "location")
     // System text toasts allow only two lines; keep the destination's next action short.
     fun settingsHint(resources: android.content.res.Resources): String = when (id) {
-        resources.getString(R.string.health_hint_notifications) -> resources.getString(R.string.health_hint_turn_on_allow_notifications_for_portemon)
+        "notifications" -> resources.getString(R.string.health_hint_turn_on_allow_notifications_for_portemon)
         "channel" -> resources.getString(R.string.health_hint_turn_on_cards_at_checkout_notifications)
         "lock_screen" -> resources.getString(R.string.health_hint_show_notifications_and_their_content_on_the)
         "precise" -> resources.getString(R.string.health_hint_permissions_location_use_precise_location)
         "background" -> resources.getString(R.string.health_hint_permissions_location_allow_all_the_time)
         "location" -> resources.getString(R.string.health_hint_turn_on_use_location)
         "automatic" -> resources.getString(R.string.health_hint_turn_on_automatic_cards_or_refresh_if)
-        resources.getString(R.string.health_hint_samsung_privacy) -> resources.getString(R.string.health_hint_allow_portemon_content_while_the_phone_is)
+        "samsung_privacy" -> resources.getString(R.string.health_hint_allow_portemon_content_while_the_phone_is)
         "samsung_live" -> resources.getString(R.string.health_hint_apps_live_notifications_for_all_apps_on)
         "pixel_helper" -> resources.getString(R.string.health_hint_allow_helper_notifications_and_enable_portemon_in)
         else -> resources.getString(R.string.health_hint_lock_screen_and_aod_now_bar_live)

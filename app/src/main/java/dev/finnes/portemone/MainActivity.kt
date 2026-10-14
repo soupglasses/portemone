@@ -194,9 +194,6 @@ class MainActivity : ComponentActivity() {
                                                         DropdownMenuItem(
                                                             text = { Text(stringResource(R.string.import_pkpass)) },
                                                             onClick = { launch("import") })
-                                                        DropdownMenuItem(
-                                                            text = { Text(stringResource(R.string.archived_cards)) },
-                                                            onClick = { launch("archived") })
                                                     }
                                                 }
                                             }

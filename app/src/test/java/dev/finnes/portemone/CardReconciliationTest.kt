@@ -64,20 +64,19 @@ class CardReconciliationTest {
     }
 
     @Test
-    fun disabledPresenceClearsNearbyStateAndDistances() {
+    fun leavingStoreCircleKeepsKnownDistanceForWalletOrdering() {
         val result = CardProximity.reconcile(
             listOf(entry(first, 10.0)), listOf(first), emptySet()
         ).single()
 
         assertFalse(result.nearby)
-        assertNull(result.store)
-        assertNull(result.distanceMeters)
+        assertEquals(first.stores.single(), result.store)
+        assertEquals(10.0, result.distanceMeters)
     }
 
     @Test
     fun unusableCardsCannotRemainNearby() {
         for (card in listOf(
-            first.copy(archived = true),
             first.copy(voided = true),
             first.copy(expiresAt = "2000-01-01T00:00:00Z")
         )) {

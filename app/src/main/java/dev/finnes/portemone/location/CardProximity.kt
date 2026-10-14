@@ -12,7 +12,7 @@ import dev.finnes.portemone.isUsable
 /** Distance ranks choices; only geofence presence decides which cards are nearby. */
 object CardProximity {
     private val nearbyOrder = compareByDescending<Entry> { it.nearby }.thenBy {
-        if (it.nearby) it.distanceMeters ?: Double.POSITIVE_INFINITY else Double.POSITIVE_INFINITY
+        it.distanceMeters ?: Double.POSITIVE_INFINITY
     }
 
     data class Entry(
@@ -67,7 +67,8 @@ object CardProximity {
         val added = cards.filter { it.id !in previousIds }.map { Entry(it, false, null, null) }
         return (existing + added).map { entry ->
             val matches = entry.card.stores.filter { entry.card.isUsable() && it.id in inside }
-            val store = matches.find { it.id == entry.store?.id } ?: matches.firstOrNull()
+            val candidates = if (matches.isNotEmpty()) matches else entry.card.stores.takeIf { entry.card.isUsable() }.orEmpty()
+            val store = candidates.find { it.id == entry.store?.id } ?: candidates.firstOrNull()
             entry.copy(
                 nearby = matches.isNotEmpty(),
                 store = store,

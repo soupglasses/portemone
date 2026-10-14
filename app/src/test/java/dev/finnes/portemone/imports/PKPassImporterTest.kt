@@ -355,12 +355,22 @@ class PKPassImporterTest {
     }
 
     @Test
+    fun formerlyArchivedCardsRetainTheirDataAndBecomeUsable() {
+        val card = parse(json())
+        val stored = JSONObject(CardStorageCodec.encode(card)).put("archived", true)
+        val restored = CardStorageCodec.decode(card.id, stored.toString(), card.stores)
+        assertEquals(card, restored)
+        assertTrue(restored.isUsable(Instant.parse("2028-01-01T00:00:00Z")))
+        assertFalse(JSONObject(CardStorageCodec.encode(restored)).has("archived"))
+    }
+
+    @Test
     fun storageRoundTripRetainsNormalizedSourceIndependentData() {
-        val original = parse(json()).copy(archived = true)
+        val original = parse(json())
         val restored =
             CardStorageCodec.decode(original.id, CardStorageCodec.encode(original), original.stores)
         assertEquals(original, restored)
-        assertFalse(restored.isUsable(Instant.parse("2028-01-01T00:00:00Z")))
-        assertFalse(restored.copy(archived = false).isUsable(Instant.parse("2031-01-01T00:00:00Z")))
+        assertTrue(restored.isUsable(Instant.parse("2028-01-01T00:00:00Z")))
+        assertFalse(restored.isUsable(Instant.parse("2031-01-01T00:00:00Z")))
     }
 }

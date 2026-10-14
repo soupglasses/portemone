@@ -24,7 +24,7 @@ internal object CardStorageCodec {
         put("expiresAt", card.expiresAt ?: JSONObject.NULL); put(
         "voided",
         card.voided
-    ); put("archived", card.archived)
+    )
         put("description", card.description ?: JSONObject.NULL); put("labelColor", card.labelColor)
         put("relevantAt", card.relevantAt ?: JSONObject.NULL); put("kind", card.kind.name)
         put("fields", org.json.JSONArray().apply {
@@ -64,7 +64,6 @@ internal object CardStorageCodec {
             stores,
             expiresAt = value.optString("expiresAt").takeUnless { value.isNull("expiresAt") },
             voided = value.getBoolean("voided"),
-            archived = value.getBoolean("archived"),
             description = value.optString("description").takeUnless { value.isNull("description") },
             labelColor = value.optInt("labelColor", value.getInt("foregroundColor")),
             relevantAt = value.optString("relevantAt").takeUnless { value.isNull("relevantAt") },

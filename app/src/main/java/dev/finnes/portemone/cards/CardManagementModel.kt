@@ -6,11 +6,14 @@ package dev.finnes.portemone.cards
 import android.app.Application
 import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import dev.finnes.portemone.Card
 import dev.finnes.portemone.R
 import dev.finnes.portemone.imports.PKPassImporter
+import dev.finnes.portemone.imports.PassImportDrafts
 import dev.finnes.portemone.userMessage
+import java.io.InputStream
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,20 +30,37 @@ internal data class CardManagementState(
     val message: String? = null,
 )
 
-internal class CardManagementModel(application: Application) : AndroidViewModel(application) {
+internal class CardManagementModel(application: Application, private val savedState: SavedStateHandle) : AndroidViewModel(application) {
     private val repository = LocalCardRepository.get(application)
     private val writer = CardWriter(application)
+    private val drafts = PassImportDrafts(application)
     private val mutable = MutableStateFlow(CardManagementState())
     val state = mutable.asStateFlow()
 
     init {
-        viewModelScope.launch { reload() }
+        viewModelScope.launch { repository.revision.collect { reload() } }
+        savedState.get<String>(IMPORT_DRAFT)?.let { token ->
+            mutable.value = mutable.value.copy(busy = true)
+            viewModelScope.launch {
+                try {
+                    val pass = withContext(Dispatchers.IO) { readPass(drafts.open(token)) }
+                    review(pass, token)
+                } catch (cancelled: CancellationException) {
+                    throw cancelled
+                } catch (_: Exception) {
+                    mutable.value = mutable.value.copy(message = application.getString(R.string.import_draft_unavailable))
+                } finally {
+                    mutable.value = mutable.value.copy(busy = false)
+                }
+            }
+        }
     }
 
     private suspend fun reload() {
         try {
+            val cards = withContext(Dispatchers.IO) { repository.cards() }
             mutable.value = mutable.value.copy(
-                cards = withContext(Dispatchers.IO) { repository.cards() },
+                cards = cards,
                 loading = false
             )
         } catch (cancelled: CancellationException) {
@@ -61,18 +81,11 @@ internal class CardManagementModel(application: Application) : AndroidViewModel(
                 val pass = withContext(Dispatchers.IO) {
                     val stream = getApplication<Application>().contentResolver.openInputStream(uri)
                         ?: throw IllegalArgumentException(getApplication<Application>().getString(R.string.the_file_could_not_be_opened))
-                    PKPassImporter.read(stream, getApplication<Application>().resources.configuration.locales[0]) { index ->
-                        getApplication<Application>().getString(R.string.imported_location_name, index)
-                    }
+                    readPass(stream)
                 }
-                val cards = withContext(Dispatchers.IO) { repository.cards() }
-                val existing = cards.find { card ->
-                    card.source?.let { source ->
-                        source.format == pass.card.source?.format && source.issuerId == pass.card.source?.issuerId && source.recordId == pass.card.source?.recordId
-                    } == true
-                }
-                mutable.value =
-                    mutable.value.copy(cards = cards, review = pass, existing = existing)
+                val token = withContext(Dispatchers.IO) { drafts.save(pass.bytes) }
+                savedState[IMPORT_DRAFT] = token
+                review(pass, token)
             } catch (cancelled: CancellationException) {
                 throw cancelled
             } catch (error: Exception) {
@@ -82,6 +95,23 @@ internal class CardManagementModel(application: Application) : AndroidViewModel(
                 mutable.value = mutable.value.copy(busy = false)
             }
         }
+    }
+
+    private fun readPass(stream: InputStream): PKPassImporter.Package =
+        PKPassImporter.read(stream, getApplication<Application>().resources.configuration.locales[0]) { index ->
+            getApplication<Application>().getString(R.string.imported_location_name, index)
+        }
+
+    private suspend fun review(pass: PKPassImporter.Package, token: String) {
+        val cards = withContext(Dispatchers.IO) { repository.cards() }
+        val existing = cards.find { card ->
+            card.source?.let { source ->
+                source.format == pass.card.source?.format && source.issuerId == pass.card.source?.issuerId && source.recordId == pass.card.source?.recordId
+            } == true
+        }
+        mutable.value = mutable.value.copy(
+            cards = cards, review = pass.copy(card = pass.card.copy(id = token)), existing = existing
+        )
     }
 
     fun exportOriginal(cardId: String, destination: Uri) {
@@ -113,7 +143,11 @@ internal class CardManagementModel(application: Application) : AndroidViewModel(
     }
 
     fun dismissReview() {
-        if (!mutable.value.busy) mutable.value = mutable.value.copy(review = null, existing = null)
+        if (mutable.value.busy) return
+        mutable.value = mutable.value.copy(review = null, existing = null)
+        savedState.remove<String>(IMPORT_DRAFT)?.let { token ->
+            viewModelScope.launch(Dispatchers.IO) { runCatching { drafts.remove(token) } }
+        }
     }
 
     fun clearMessage() {
@@ -125,7 +159,7 @@ internal class CardManagementModel(application: Application) : AndroidViewModel(
         if (pass.verification.warnings.isNotEmpty() && !acceptedRisk) return
         val existing = mutable.value.existing
         val card = pass.card.copy(
-            id = existing?.id ?: pass.card.id, archived = existing?.archived ?: false,
+            id = existing?.id ?: pass.card.id,
             stores = if (existing != null && keepLocations) existing.stores else pass.card.stores
         )
         save(card, pass.bytes, existing) { dismissReview(); onImported() }
@@ -150,27 +184,14 @@ internal class CardManagementModel(application: Application) : AndroidViewModel(
             } catch (cancelled: CancellationException) {
                 throw cancelled
             } catch (error: Exception) {
-                saved = withContext(Dispatchers.IO) {
-                    repository.cards().find { it.id == card.id } == normalized
-                }
                 mutable.value = mutable.value.copy(
-                    message = if (saved) getApplication<Application>().getString(R.string.card_saved_nearby_cards_could_not_update_refresh_nearby)
-                    else error.userMessage(getApplication<Application>().resources, R.string.could_not_save_this_card_try_again)
+                    message = error.userMessage(getApplication<Application>().resources, R.string.could_not_save_this_card_try_again)
                 )
             } finally {
                 reload()
                 mutable.value = mutable.value.copy(busy = false)
             }
             if (saved) onSaved()
-        }
-    }
-
-    fun archive(card: Card) {
-        save(card.copy(archived = !card.archived), expected = card) {
-            if (mutable.value.message == null) mutable.value = mutable.value.copy(
-                message =
-                    if (card.archived) getApplication<Application>().getString(R.string.card_restored) else getApplication<Application>().getString(R.string.card_archived_restore_it_from_archived)
-            )
         }
     }
 
@@ -183,15 +204,14 @@ internal class CardManagementModel(application: Application) : AndroidViewModel(
             } catch (cancelled: CancellationException) {
                 throw cancelled
             } catch (_: Exception) {
-                if (withContext(Dispatchers.IO) { repository.cards().none { it.id == card.id } }) {
-                    mutable.value =
-                        mutable.value.copy(message = getApplication<Application>().getString(R.string.card_deleted_nearby_cards_could_not_update_refresh_nearby))
-                    onDeleted()
-                } else mutable.value =
-                    mutable.value.copy(message = getApplication<Application>().getString(R.string.could_not_delete_this_card_try_again))
+                mutable.value = mutable.value.copy(message = getApplication<Application>().getString(R.string.could_not_delete_this_card_try_again))
             } finally {
                 reload(); mutable.value = mutable.value.copy(busy = false)
             }
         }
+    }
+
+    companion object {
+        internal const val IMPORT_DRAFT = "pending_import"
     }
 }

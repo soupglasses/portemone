@@ -24,7 +24,7 @@ internal object CardExpiration {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
         alarms.cancel(intent)
         val now = Instant.now()
-        val next = cards.filter { !it.archived && !it.voided }.mapNotNull { it.expiresAt?.let(Instant::parse) }
+        val next = cards.filter { !it.voided }.mapNotNull { it.expiresAt?.let(Instant::parse) }
             .filter { it.isAfter(now) }.minOrNull() ?: return
         alarms.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, next.toEpochMilli(), intent)
     }

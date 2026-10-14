@@ -100,10 +100,10 @@ class CardChangeOutboxTest {
     }
 
     @Test
-    fun archivingAndRestoringReconcileGeofences() = withDatabase { _, repository ->
+    fun voidingAndRestoringValidityReconcileGeofences() = withDatabase { _, repository ->
         repository.saveCard(original)
         repository.acknowledge(repository.pendingChanges().single())
-        repository.saveCard(original.copy(archived = true))
+        repository.saveCard(original.copy(voided = true))
         assertEquals(
             original.stores.map { it.id }.toSet(),
             repository.pendingChanges().single().changedStoreIds

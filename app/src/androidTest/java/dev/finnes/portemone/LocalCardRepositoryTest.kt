@@ -104,11 +104,10 @@ class LocalCardRepositoryTest {
         try {
             assertTrue(repository.cards().isEmpty())
             repository.saveCard(card)
-            val updated = card.copy(cardName = "Work", archived = true)
+            val updated = card.copy(cardName = "Work")
             repository.saveCard(updated, expected = card)
             repository.close(); repository = LocalCardRepository(context, database)
             assertEquals(updated, repository.cards().single())
-            repository.saveCard(updated.copy(archived = false), expected = updated)
             repository.deleteCard(card.id)
             repository.close(); repository = LocalCardRepository(context, database)
             assertTrue("Deleted cards must never be reseeded", repository.cards().isEmpty())

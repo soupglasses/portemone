@@ -94,7 +94,7 @@ internal class WalletHomeModel(application: Application) : AndroidViewModel(appl
         if (settings.enabled &&
             (!settings.hasCurrentDeviceRegistration() ||
                     (!settings.hasPendingCardChanges() &&
-                            (!locations.hasCurrentRegistration() || age !in 0..30_000)))
+                            (!locations.hasCurrentRegistration() || age !in 0..5 * 60_000L)))
         ) {
             refresh(initial = true)
         } else reconcileEdits()
@@ -203,7 +203,7 @@ internal class WalletHomeModel(application: Application) : AndroidViewModel(appl
         settings.activeStoreIds()
 
     private suspend fun readCards(): List<Card> =
-        withContext(Dispatchers.IO) { settings.cards().filter { !it.archived } }
+        withContext(Dispatchers.IO) { settings.cards() }
 
     private fun publish(value: WalletHomeState) {
         mutableState.value = value

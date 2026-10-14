@@ -39,6 +39,20 @@ class CardProximityTest {
     }
 
     @Test
+    fun cardsOutsideStoreCirclesSortByTheirNearestSavedStore() {
+        val ikea = TestMemberships.cards.first().copy(id = "ikea", stores = listOf(store("ikea-store", 56.08)))
+        val coop = ikea.copy(id = "coop", stores = listOf(store("coop-far", 56.1), store("coop-close", 56.005)))
+        val unknown = ikea.copy(id = "unknown", stores = emptyList())
+        val cards = listOf(unknown, ikea, coop)
+        val ranked = CardProximity.order(cards, emptySet(), fix)
+        assertEquals(listOf("coop", "ikea", "unknown"), ranked.map { it.card.id })
+        assertTrue(ranked.none { it.nearby })
+        assertEquals("coop-close", ranked.first().store?.id)
+        val reconciled = CardProximity.reconcile(ranked, cards, emptySet())
+        assertEquals(ranked, reconciled)
+    }
+
+    @Test
     fun membershipsAtTheSameStoreKeepTheirSavedOrder() {
         val shared = store("shared store", 56.0001)
         val a = TestMemberships.cards.first().copy(id = "a", stores = listOf(shared))

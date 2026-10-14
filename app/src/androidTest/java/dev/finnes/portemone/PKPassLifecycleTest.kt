@@ -57,11 +57,12 @@ class PKPassLifecycleTest {
     }
 
     @Test
-    fun openingUnsignedPassRequiresOverrideAndReviewSurvivesRecreation() =
+    fun openingUnsignedPassRequiresOverrideAndReviewSurvivesModelLoss() =
         withPass(Intent.ACTION_VIEW) { scenario, bytes, serial ->
             awaitText("Review pass")
             compose.onNodeWithText("Accept risk and import").assertIsDisplayed()
             compose.onNodeWithText("Import card", substring = false).assertDoesNotExist()
+            scenario.onActivity { it.viewModelStore.clear() }
             scenario.recreate()
             awaitText("Review pass")
             compose.onNodeWithText("Accept risk and import").performClick()
@@ -76,6 +77,26 @@ class PKPassLifecycleTest {
         }
 
     @Test
+    fun cardListReflectsEditsAndDeletionFromAnotherScreen() {
+        val repository = LocalCardRepository.get(context)
+        val card = TestMemberships.cards.first().copy(id = UUID.randomUUID().toString(), stores = emptyList())
+        repository.saveCard(card)
+        try {
+            ActivityScenario.launch(CardManagementActivity::class.java).use {
+                awaitText("${card.brandName} ${card.cardName}")
+                repository.saveCard(card.copy(cardName = "Updated elsewhere"), expected = card)
+                awaitText("${card.brandName} Updated elsewhere")
+                repository.deleteCard(card.id)
+                compose.waitUntil(8_000) {
+                    compose.onAllNodesWithText("${card.brandName} Updated elsewhere").fetchSemanticsNodes().isEmpty()
+                }
+            }
+        } finally {
+            repository.deleteCard(card.id)
+        }
+    }
+
+    @Test
     fun sharingPassUsesSameReviewAndCancelDoesNotSave() =
         withPass(Intent.ACTION_SEND) { _, _, serial ->
             awaitText("Review pass")
@@ -86,7 +107,7 @@ class PKPassLifecycleTest {
         }
 
     @Test
-    fun archiveRestoreAndConfirmedDeletionAreAvailableAfterImport() =
+    fun editsAndConfirmedDeletionAreAvailableAfterImport() =
         withPass(Intent.ACTION_SEND) { _, _, serial ->
             awaitText("Review pass")
             compose.onNodeWithText("Accept risk and import").performClick()
@@ -130,19 +151,7 @@ class PKPassLifecycleTest {
             compose.onNodeWithText("Checkout instructions").assertIsDisplayed()
 
             compose.onNodeWithTag("card_details")
-                .performScrollToNode(hasText("Archive", substring = false))
-            compose.onNodeWithText("Archive", substring = false).performClick()
-            compose.waitUntil(5_000) {
-                LocalCardRepository.get(context).cards()
-                    .any { it.source?.recordId == serial && it.archived }
-            }
-            awaitText("Restore")
-            compose.onAllNodesWithText("Restore", substring = false).onLast().performScrollTo()
-                .performClick()
-            compose.waitUntil(5_000) {
-                LocalCardRepository.get(context).cards()
-                    .any { it.source?.recordId == serial && !it.archived }
-            }
+                .performScrollToNode(hasText("More", substring = false))
             compose.onNodeWithText("More", substring = false).performClick()
             awaitText("Delete")
             compose.onAllNodesWithText("Delete", substring = false).onLast().performScrollTo()

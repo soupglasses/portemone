@@ -351,7 +351,7 @@ class NearbyRefreshTest {
                 activity.moveToState(Lifecycle.State.STARTED)
                 moveTo(if (arriving) atStore() else outside())
                 context.getSharedPreferences("local_geofences", Context.MODE_PRIVATE).edit()
-                    .putLong("last_nearby_update_at", System.currentTimeMillis() - 60_000).commit()
+                    .putLong("last_nearby_update_at", System.currentTimeMillis() - 360_000).commit()
                 val staleUpdate = settings.lastNearbyUpdateAtMillis
                 assertTrue(manager.hasCurrentRegistration())
                 activity.moveToState(Lifecycle.State.RESUMED)

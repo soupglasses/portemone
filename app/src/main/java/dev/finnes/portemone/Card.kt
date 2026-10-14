@@ -110,7 +110,6 @@ data class Card(
     val stores: List<StoreLocation> = emptyList(),
     val expiresAt: String? = null,
     val voided: Boolean = false,
-    val archived: Boolean = false,
     val description: String? = null,
     val labelColor: Int = accentColor,
     val relevantAt: String? = null,
@@ -157,10 +156,9 @@ data class CardSource(
 const val MAX_CARD_LOCATIONS = 10
 
 fun Card.isUsable(now: java.time.Instant = java.time.Instant.now()): Boolean =
-    !archived && !voided && (expiresAt == null || now.isBefore(java.time.Instant.parse(expiresAt)))
+    !voided && (expiresAt == null || now.isBefore(java.time.Instant.parse(expiresAt)))
 
 internal fun Card.statusLabelRes(): Int? = when {
-    archived -> R.string.archived
     voided -> R.string.card_status_no_longer_valid
     !isUsable() -> R.string.card_status_expired
     else -> null

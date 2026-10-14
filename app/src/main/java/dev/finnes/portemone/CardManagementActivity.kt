@@ -82,7 +82,6 @@ private fun CardManagementScreen(
     val state by model.state.collectAsStateWithLifecycle()
     var editorId by rememberSaveable { mutableStateOf<String?>(null) }
     var editRequested by rememberSaveable { mutableStateOf(false) }
-    var archived by rememberSaveable { mutableStateOf(action == "archived") }
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         if (uri != null) model.import(uri) else if (action == "import") onClose()
     }
@@ -107,7 +106,7 @@ private fun CardManagementScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(if (archived) resources.getString(R.string.archived_cards) else resources.getString(R.string.cards)) },
+                title = { Text(stringResource(R.string.cards)) },
                 navigationIcon = { BackButton(onClick = onClose) })
         },
         snackbarHost = { SnackbarHost(snackbars) }) { padding ->
@@ -136,19 +135,9 @@ private fun CardManagementScreen(
                 stringResource(R.string.cards_are_saved_on_your_phone_when_encrypted_backup),
                 style = MaterialTheme.typography.bodySmall
             )
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                FilterChip(
-                    selected = !archived,
-                    onClick = { archived = false },
-                    label = { Text(stringResource(R.string.your_cards)) })
-                FilterChip(
-                    selected = archived,
-                    onClick = { archived = true },
-                    label = { Text(stringResource(R.string.archived)) })
-            }
             if (state.loading || state.busy) LinearProgressIndicator(Modifier.fillMaxWidth())
-            val cards = state.cards.filter { it.archived == archived }
-            if (!state.loading && cards.isEmpty()) Text(if (archived) resources.getString(R.string.no_archived_cards) else resources.getString(R.string.add_your_first_card_or_import_a_pass_from))
+            val cards = state.cards
+            if (!state.loading && cards.isEmpty()) Text(stringResource(R.string.add_your_first_card_or_import_a_pass_from))
             cards.forEach { card ->
                 MembershipCardRow(card, false, onClick = { onOpen(card) })
             }
@@ -198,9 +187,6 @@ internal fun CardActions(card: Card, model: CardManagementModel, onDeleted: () -
         TextButton(
             enabled = !state.busy,
             onClick = { model.clearMessage(); editing = true }) { Text(stringResource(R.string.edit)) }
-        TextButton(
-            enabled = !state.busy,
-            onClick = { model.archive(card) }) { Text(if (card.archived) resources.getString(R.string.restore) else resources.getString(R.string.archive)) }
         Box {
             TextButton(enabled = !state.busy, onClick = { more = true }) { Text(stringResource(R.string.more)) }
             DropdownMenu(expanded = more, onDismissRequest = { more = false }) {

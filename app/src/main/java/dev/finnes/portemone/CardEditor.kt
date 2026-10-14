@@ -210,17 +210,13 @@ internal fun CardEditor(
         val dateState =
             rememberDatePickerState(initialSelectedDateMillis = expiration.takeIf { it.isNotBlank() }
                 ?.let {
-                    runCatching { java.time.Instant.parse(it).toEpochMilli() }.getOrNull()
+                    runCatching { expirationPickerDate(it) }.getOrNull()
                 })
         DatePickerDialog(
             onDismissRequest = { pickingExpiration = false },
             confirmButton = {
                 TextButton(enabled = dateState.selectedDateMillis != null, onClick = {
-                    val day = java.time.Instant.ofEpochMilli(dateState.selectedDateMillis!!)
-                        .atZone(java.time.ZoneOffset.UTC).toLocalDate()
-                    expiration =
-                        day.plusDays(1).atStartOfDay(java.time.ZoneId.systemDefault()).toInstant()
-                            .toString()
+                    expiration = expirationForDate(dateState.selectedDateMillis!!, expiration.takeIf { it.isNotBlank() })
                     pickingExpiration = false
                 }) { Text(stringResource(R.string.use_date)) }
             },
