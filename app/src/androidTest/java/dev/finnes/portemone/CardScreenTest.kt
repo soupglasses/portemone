@@ -7,7 +7,6 @@ import android.graphics.drawable.BitmapDrawable
 import android.widget.ImageView
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
-import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -75,12 +74,12 @@ class CardScreenTest {
                 }
                 val initialOrientation = context.resources.configuration.orientation
                 val initialSpan = verifyAndCapture("barcode-padding-portrait")
-                compose.onNodeWithText("Rotate").performClick()
+                compose.onNodeWithContentDescription("Rotate").performClick()
                 compose.waitUntil(10_000) { context.resources.configuration.orientation != initialOrientation }
                 compose.waitForIdle()
                 val rotatedSpan = verifyAndCapture("barcode-padding-landscape")
                 assertTrue("Rotating should change the available barcode width", initialSpan != rotatedSpan)
-                compose.onNodeWithText("Rotate").performClick()
+                compose.onNodeWithContentDescription("Rotate").performClick()
                 compose.waitUntil(10_000) { context.resources.configuration.orientation == initialOrientation }
                 compose.waitForIdle()
                 assertEquals(initialSpan, verifyAndCapture("barcode-padding-return"))

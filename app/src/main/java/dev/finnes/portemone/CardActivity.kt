@@ -35,6 +35,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -254,15 +255,20 @@ open class CardActivity : ComponentActivity() {
                                 BackButton(onClick = { if (enlarged) leaveScanner() else closeCard() })
                             }, actions = {
                                 if (enlarged) {
-                                    FilledTonalButton(
-                                        modifier = Modifier.padding(end = 8.dp),
+                                    FilledTonalIconButton(
+                                        modifier = Modifier.padding(end = 8.dp).size(48.dp),
                                         onClick = {
                                             requestedOrientation =
                                                 if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE)
-                                                    ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-                                                else ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+                                                    ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
+                                                else ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
                                         }
-                                    ) { Text(stringResource(R.string.rotate_code)) }
+                                    ) {
+                                        Icon(
+                                            painterResource(R.drawable.ic_rotate),
+                                            contentDescription = stringResource(R.string.rotate_code)
+                                        )
+                                    }
                                 }
                             }, colors = TopAppBarDefaults.topAppBarColors(
                                 containerColor = if (enlarged) Color.White else MaterialTheme.colorScheme.surfaceContainerLow,
