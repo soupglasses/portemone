@@ -14,31 +14,31 @@ SPDX-License-Identifier: EUPL-1.2
 An Android wallet for loyalty cards, with PKPass import, scannable codes,
 home-screen widgets and nearby-card notifications. Requires Android 12+.
 
-<p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/screenshots/dark/wallet.png">
-    <img src="docs/assets/screenshots/light/wallet.png" width="190" alt="Wallet with five fictional membership cards">
-  </picture>
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/screenshots/dark/nearby-first.png">
-    <img src="docs/assets/screenshots/light/nearby-first.png" width="190" alt="Nearby-card carousel with Brutto Minus selected and another card beside it">
-  </picture>
-</p>
-
-<p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/screenshots/dark/qr.png">
-    <img src="docs/assets/screenshots/light/qr.png" width="190" alt="Brutto Minus membership card with a QR code">
-  </picture>
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/screenshots/dark/code-128.png">
-    <img src="docs/assets/screenshots/light/code-128.png" width="190" alt="Krumle Kiosk Snack Pass with a Code 128 barcode">
-  </picture>
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/screenshots/dark/pdf417.png">
-    <img src="docs/assets/screenshots/light/pdf417.png" width="190" alt="Bits &amp; Bobs card with a PDF417 code">
-  </picture>
-</p>
+<table>
+  <tr>
+    <td>
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="docs/assets/screenshots/dark/wallet.png">
+        <img src="docs/assets/screenshots/light/wallet.png" width="240" alt="Wallet with five fictional membership cards">
+      </picture>
+    </td>
+    <td>
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="docs/assets/screenshots/dark/nearby-first.png">
+        <img src="docs/assets/screenshots/light/nearby-first.png" width="240" alt="Nearby-card carousel with Brutto Minus selected and another card beside it">
+      </picture>
+    </td>
+    <td>
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="docs/assets/screenshots/dark/card-details.png">
+        <img src="docs/assets/screenshots/light/card-details.png" width="240" alt="Brutto Minus card details with a QR code and a saved store location on a map">
+      </picture>
+    </td>
+    <td>
+      <img src="docs/assets/screenshots/expanded/code-128.png" width="240" alt="Krumle Kiosk Snack Pass with a Code 128 barcode">
+    </td>
+  </tr>
+</table>
 
 ## Features
 

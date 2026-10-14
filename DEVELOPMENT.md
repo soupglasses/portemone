@@ -26,20 +26,19 @@ Portemoné's notification settings. It has no launcher entry; Samsung does not n
 
 ## README screenshots
 
-Create an Android phone AVD named `Portemone_Screenshots` with API 36 or newer,
-then run:
+Start a visible Android phone AVD (API 36 or newer), then run:
 
 ```sh
-scripts/capture-readme-screenshots.sh
+scripts/capture-readme-screenshots.sh Pixel_8
 ```
 
-The script starts that AVD if needed, clears Portemoné's data **on that AVD**,
-installs the debug app and test APK, grants location permission, and fixes the
-emulator location near three of the five fictional stores. It captures matching
-light and dark wallet, nearby carousel, QR, Code 128 and PDF417 views into
-`docs/assets/screenshots/`. It targets only the dedicated AVD and refuses to
-run while another emulator is online. It leaves physical devices alone and keeps
-the AVD running so you can inspect the app afterward. The
+Replace `Pixel_8` with your AVD name, or omit it to be prompted. The script clears
+Portemoné's data on that emulator, installs the debug app and test APK, grants
+location permission, and fixes the emulator location near the fictional stores.
+It updates matching light and dark wallet, nearby carousel and card details
+screenshots, plus shared QR, Code 128 and PDF417 expanded-code screenshots in
+`docs/assets/screenshots/`. It refuses to run
+while another emulator is online and leaves physical devices alone. The
 original logo drawings are in `docs/assets/demo/`; their PNG test fixtures are
 in `app/src/androidTest/assets/demo/`. Regenerate a fixture after editing a logo
 with:

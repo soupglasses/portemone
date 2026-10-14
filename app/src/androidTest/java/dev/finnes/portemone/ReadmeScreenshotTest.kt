@@ -4,10 +4,12 @@
 package dev.finnes.portemone
 
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.util.Base64
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.geometry.Rect
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
@@ -26,7 +28,7 @@ class ReadmeScreenshotTest {
     @get:Rule val compose = createEmptyComposeRule()
 
     @Test
-    fun captureWalletNearbyAndCodeFormats() {
+    fun captureWalletNearbyDetailsAndCodeFormats() {
         val instrumentation = InstrumentationRegistry.getInstrumentation()
         val context = instrumentation.targetContext
         val theme = InstrumentationRegistry.getArguments().getString("screenshotTheme", "light")
@@ -89,14 +91,30 @@ class ReadmeScreenshotTest {
             }
             capture("wallet")
         }
-        listOf(
-            "qr" to cards[0], "code-128" to cards[1], "pdf417" to cards[4]
-        ).forEach { (name, card) ->
-            ActivityScenario.launch<CardActivity>(
-                CardActivity.intent(context, card).putExtra(CardActivity.OPEN_ENLARGED, true)
-            ).use {
-                compose.onNodeWithText(card.rawValue).assertExists()
-                capture(name)
+        ActivityScenario.launch<CardActivity>(CardActivity.intent(context, cards[0])).use {
+            val map = compose.onNodeWithTag("location_map_readme-brutto-centre")
+            map.assertExists()
+            val bounds = map.fetchSemanticsNode().boundsInWindow
+            compose.waitUntil(20_000) {
+                val screenshot = requireNotNull(instrumentation.uiAutomation.takeScreenshot())
+                try {
+                    mapTilesVisible(screenshot, bounds)
+                } finally {
+                    screenshot.recycle()
+                }
+            }
+            capture("card-details")
+        }
+        if (theme == "light") {
+            listOf(
+                "qr" to cards[0], "code-128" to cards[1], "pdf417" to cards[4]
+            ).forEach { (name, card) ->
+                ActivityScenario.launch<CardActivity>(
+                    CardActivity.intent(context, card).putExtra(CardActivity.OPEN_ENLARGED, true)
+                ).use {
+                    compose.onNodeWithText(card.rawValue).assertExists()
+                    capture(name)
+                }
             }
         }
         settings.enabled = true
@@ -107,5 +125,23 @@ class ReadmeScreenshotTest {
             }
             capture("nearby-first")
         }
+    }
+
+    private fun mapTilesVisible(image: Bitmap, bounds: Rect): Boolean {
+        val colors = mutableSetOf<Int>()
+        var bright = 0
+        var samples = 0
+        for (row in 1..8) for (column in 1..20) {
+            val x = (bounds.left + bounds.width * column / 21).toInt().coerceIn(0, image.width - 1)
+            val y = (bounds.top + bounds.height * row / 20).toInt().coerceIn(0, image.height - 1)
+            val pixel = image.getPixel(x, y)
+            val red = Color.red(pixel)
+            val green = Color.green(pixel)
+            val blue = Color.blue(pixel)
+            if (minOf(red, green, blue) > 160) bright++
+            colors += ((red shr 4) shl 8) or ((green shr 4) shl 4) or (blue shr 4)
+            samples++
+        }
+        return bright > samples / 2 && colors.size > 25
     }
 }
