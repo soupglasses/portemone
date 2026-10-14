@@ -1,0 +1,10 @@
+<!-- SPDX-FileCopyrightText: 2026 Sofie Finnes <sofie+git@finnes.dev> -->
+<!-- SPDX-License-Identifier: EUPL-1.2 -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <title>Bits &amp; Bobs: a hex nut and a slotted screw</title>
+  <path fill="#FFF0D2" fill-rule="evenodd" d="m77 27 50 29v58l-50 29-50-29V56zm0 33a25 25 0 1 0 0 50 25 25 0 0 0 0-50z"/>
+  <g transform="rotate(36 166 150)">
+    <path fill="#FF925B" d="M132 65h68v41h-20v104l-14 19-14-19V106h-20z"/>
+    <path d="M145 85h42m-34 49h26m-26 23h26m-26 23h26m-26 23h26" fill="none" stroke="#243F5A" stroke-width="9"/>
+  </g>
+</svg>

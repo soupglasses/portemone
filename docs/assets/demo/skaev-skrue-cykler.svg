@@ -1,0 +1,14 @@
+<!-- SPDX-FileCopyrightText: 2026 Sofie Finnes <sofie+git@finnes.dev> -->
+<!-- SPDX-License-Identifier: EUPL-1.2 -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <title>Skæv Skrue Cykler: a crooked bicycle workshop seal</title>
+  <circle cx="128" cy="128" r="108" fill="#233C37"/>
+  <circle cx="128" cy="128" r="97" fill="none" stroke="#E9BB42" stroke-width="3"/>
+  <g fill="none" stroke="#FFF3CF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="70" cy="146" r="31"/>
+    <circle cx="186" cy="146" r="31"/>
+    <path d="m70 146 34-58 31 58H70l82-49 34 49m-34-49-7-23h24m-77 14h25m18 58 14 8"/>
+  </g>
+  <path d="m110 52 32-7m-27 14 28-7" fill="none" stroke="#E9BB42" stroke-width="5" stroke-linecap="round"/>
+  <path d="m104 198 48-9m-38 16 28-5" fill="none" stroke="#E9BB42" stroke-width="6" stroke-linecap="round"/>
+</svg>

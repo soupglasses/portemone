@@ -1,0 +1,11 @@
+<!-- SPDX-FileCopyrightText: 2026 Sofie Finnes <sofie+git@finnes.dev> -->
+<!-- SPDX-License-Identifier: EUPL-1.2 -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <title>Brutto Minus: the price with a bite taken out</title>
+  <g transform="rotate(-9 128 128)">
+    <path fill="#FFF4D9" d="M48 32h160v183l-20-13-20 13-20-13-20 13-20-13-20 13-20-13-20 13z"/>
+    <path fill="#652A7C" d="M72 62h53c24 0 36 12 36 29 0 11-6 20-16 24 13 3 21 13 21 27 0 21-16 34-41 34H72zm29 24v20h20c8 0 12-4 12-10s-4-10-12-10zm0 43v23h22c9 0 14-4 14-12 0-7-5-11-14-11z"/>
+    <path fill="#FF856E" d="M145 105h82v38h-82z"/>
+    <path fill="#652A7C" d="M161 120h50v8h-50z"/>
+  </g>
+</svg>

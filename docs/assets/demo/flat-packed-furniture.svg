@@ -1,0 +1,7 @@
+<!-- SPDX-FileCopyrightText: 2026 Sofie Finnes <sofie+git@finnes.dev> -->
+<!-- SPDX-License-Identifier: EUPL-1.2 -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <title>Flat Packed Furniture: a chair and an assembly key</title>
+  <path fill="#FFF1D5" fill-rule="evenodd" d="M35 36h122v99h11v27h-16v60h-27v-60H62v60H35v-60H24v-27h11zM62 87v48h68V87z"/>
+  <path d="M213 48v111h-28" fill="none" stroke="#F7CDA7" stroke-width="19" stroke-linecap="square" stroke-linejoin="miter"/>
+</svg>

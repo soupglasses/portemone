@@ -24,6 +24,38 @@ Its Android package ID is `dev.finnes.portemone.notificationcompanion`.
 Install with `mise run install:helper`, then enable it through
 Portemoné's notification settings. It has no launcher entry; Samsung does not need it.
 
+## README screenshots
+
+Create an Android phone AVD named `Portemone_Screenshots` with API 36 or newer,
+then run:
+
+```sh
+scripts/capture-readme-screenshots.sh
+```
+
+The script starts that AVD if needed, clears Portemoné's data **on that AVD**,
+installs the debug app and test APK, grants location permission, and fixes the
+emulator location near three of the five fictional stores. It captures matching
+light and dark wallet, nearby carousel, QR, Code 128 and PDF417 views into
+`docs/assets/screenshots/`. It targets only the dedicated AVD and refuses to
+run while another emulator is online. It leaves physical devices alone and keeps
+the AVD running so you can inspect the app afterward. The
+original logo drawings are in `docs/assets/demo/`; their PNG test fixtures are
+in `app/src/androidTest/assets/demo/`. Regenerate a fixture after editing a logo
+with:
+
+```sh
+rsvg-convert -w 256 -h 256 docs/assets/demo/NAME.svg \
+  -o app/src/androidTest/assets/demo/NAME.png
+```
+
+The names, logo geometry and membership values are synthetic. They have no
+connection to any retailer. Before adopting a name as a real brand, check
+[EUIPO TMview](https://www.euipo.europa.eu/en/trade-marks/before-applying/availability)
+and the [Danish trademark register](https://onlineweb.dkpto.dk/pvsonline/Varemaerke?action=201&language=GB).
+The screenshots are emulator captures, not evidence of physical
+Samsung or Pixel notification behavior.
+
 ## Saving cards and updating nearby notifications
 
 `CardWriter` commits card saves locally to SQLite. The same transaction records pending presentation
@@ -128,6 +160,8 @@ notification posts reference `ic_card.xml`. The geometry source is
 `tools/generate_icons.py`. Run `python3 tools/generate_icons.py` to regenerate the
 main app's icons; copy changed launcher vectors to the helper's drawable directory
 when updating the shared branding. The README logo belongs in `docs/assets/`.
+The launch screen uses the foreground vector over the same solid brand color
+as the adaptive icon background, so Android does not add a second icon disk.
 `docs/assets/notification-icon-native.png` preserves the original notification
 preview. The generator also writes `docs/assets/notification-icon-native.svg`
 from the same geometry as `ic_card.xml`, including its clipping and transforms.
