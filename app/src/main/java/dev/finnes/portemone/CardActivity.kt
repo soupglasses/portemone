@@ -6,6 +6,8 @@ package dev.finnes.portemone
 import android.app.KeyguardManager
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ActivityInfo
+import android.content.res.Configuration
 import android.net.Uri
 import android.os.Bundle
 import android.view.WindowManager
@@ -223,6 +225,9 @@ open class CardActivity : ComponentActivity() {
                 val darkTheme = isSystemInDarkTheme()
                 val scroll = rememberLazyListState()
                 SideEffect {
+                    if (!enlarged && requestedOrientation != ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED) {
+                        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+                    }
                     WindowCompat.getInsetsController(window, window.decorView).apply {
                         isAppearanceLightStatusBars = enlarged || !darkTheme
                         isAppearanceLightNavigationBars = enlarged || !darkTheme
@@ -247,6 +252,18 @@ open class CardActivity : ComponentActivity() {
                                 )
                             }, navigationIcon = {
                                 BackButton(onClick = { if (enlarged) leaveScanner() else closeCard() })
+                            }, actions = {
+                                if (enlarged) {
+                                    FilledTonalButton(
+                                        modifier = Modifier.padding(end = 8.dp),
+                                        onClick = {
+                                            requestedOrientation =
+                                                if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE)
+                                                    ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+                                                else ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+                                        }
+                                    ) { Text(stringResource(R.string.rotate_code)) }
+                                }
                             }, colors = TopAppBarDefaults.topAppBarColors(
                                 containerColor = if (enlarged) Color.White else MaterialTheme.colorScheme.surfaceContainerLow,
                                 titleContentColor = if (enlarged) Color.Black else MaterialTheme.colorScheme.onSurface
@@ -256,20 +273,22 @@ open class CardActivity : ComponentActivity() {
                     Box(Modifier.fillMaxSize().padding(padding)) {
                         if (enlarged) {
                             Column(
-                                Modifier.fillMaxSize().padding(20.dp),
+                                Modifier.fillMaxSize().padding(vertical = 20.dp),
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 verticalArrangement = Arrangement.spacedBy(16.dp)
                             ) {
                                 card.statusLabelRes()?.let { resources.getString(it) }
-                                    ?.let { Text(it, color = Color.Red) }
+                                    ?.let { Text(it, color = Color.Red, modifier = Modifier.padding(horizontal = 20.dp)) }
                                 EnlargedCode(card, Modifier.fillMaxWidth().weight(1f))
                                 Text(
                                     card.rawValue,
+                                    modifier = Modifier.padding(horizontal = 20.dp),
                                     color = Color.Black,
                                     style = MaterialTheme.typography.titleMedium
                                 )
                                 Text(
                                     stringResource(R.string.screen_brightness_increased),
+                                    modifier = Modifier.padding(horizontal = 20.dp),
                                     color = Color.DarkGray,
                                     style = MaterialTheme.typography.bodySmall
                                 )

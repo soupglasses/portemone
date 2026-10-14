@@ -224,6 +224,7 @@ SPDX-License-Identifier: EUPL-1.2
     <string name="original_import_needs_review">Original import needs review: %1$s</string>
     <string name="demo_membership">Demo membership</string>
     <string name="code_does_not_fit_rotate_your_phone_to_provide">Code does not fit. Rotate your phone to provide more space.</string>
+    <string name="rotate_code">Rotate</string>
     <string name="could_not_read_diagnostics_tap_refresh_to_retry">Could not read diagnostics. Tap Refresh to retry.</string>
     <string name="could_not_complete_that_action_try_again">Could not complete that action. Try again.</string>
     <string name="debug_logs">Debug logs</string>

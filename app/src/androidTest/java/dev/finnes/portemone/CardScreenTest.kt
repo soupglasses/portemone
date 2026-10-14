@@ -7,6 +7,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.widget.ImageView
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -33,6 +34,69 @@ class CardScreenTest {
 
     @get:Rule
     val compose = createEmptyComposeRule()
+
+    @Test
+    fun enlargedCodeCanRotateAndReturnWithTheSameScannableValue() {
+        val instrumentation = InstrumentationRegistry.getInstrumentation()
+        val context = instrumentation.targetContext
+        val repository = LocalCardRepository.get(context)
+        val card = TestMemberships.cards.first().copy(
+            id = "rotation-test",
+            brandName = "Synthetic test",
+            rawValue = "A7B3C9D2E8F4G6H5J1K0L2M4N6P8Q0R3S5T7U9V1",
+            barcodeType = BarcodeType.CODE_128,
+            stores = emptyList()
+        )
+        repository.saveCard(card)
+        try {
+            ActivityScenario.launch<CardActivity>(CardActivity.intent(context, card)).use { scenario ->
+                compose.onNodeWithContentDescription("Enlarge Synthetic test code").performClick()
+                compose.waitForIdle()
+                fun verifyAndCapture(name: String): Int {
+                    var span = 0
+                    scenario.onActivity { activity ->
+                        val view = activity.findViewById<ImageView>(R.id.barcode)
+                        val bitmap = (view.drawable as BitmapDrawable).bitmap
+                        assertEquals(view.width, bitmap.width)
+                        val pixels = IntArray(bitmap.width * bitmap.height)
+                        bitmap.getPixels(pixels, 0, bitmap.width, 0, 0, bitmap.width, bitmap.height)
+                        assertEquals(card.rawValue, MultiFormatReader().decode(BinaryBitmap(
+                            HybridBinarizer(RGBLuminanceSource(bitmap.width, bitmap.height, pixels))
+                        )).text)
+                        val bars = (0 until bitmap.width).filter {
+                            bitmap.getPixel(it, bitmap.height / 2) == android.graphics.Color.BLACK
+                        }
+                        span = bars.last() - bars.first() + 1
+                    }
+                    java.io.File(context.getExternalFilesDir(null), "$name.png").outputStream().use {
+                        instrumentation.uiAutomation.takeScreenshot().compress(android.graphics.Bitmap.CompressFormat.PNG, 100, it)
+                    }
+                    return span
+                }
+                val initialOrientation = context.resources.configuration.orientation
+                val initialSpan = verifyAndCapture("barcode-padding-portrait")
+                compose.onNodeWithText("Rotate").performClick()
+                compose.waitUntil(10_000) { context.resources.configuration.orientation != initialOrientation }
+                compose.waitForIdle()
+                val rotatedSpan = verifyAndCapture("barcode-padding-landscape")
+                assertTrue("Rotating should change the available barcode width", initialSpan != rotatedSpan)
+                compose.onNodeWithText("Rotate").performClick()
+                compose.waitUntil(10_000) { context.resources.configuration.orientation == initialOrientation }
+                compose.waitForIdle()
+                assertEquals(initialSpan, verifyAndCapture("barcode-padding-return"))
+                compose.onNodeWithContentDescription("Back").performClick()
+                compose.waitForIdle()
+                scenario.onActivity { activity ->
+                    assertEquals(android.content.pm.ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED, activity.requestedOrientation)
+                }
+                instrumentation.sendStatus(0, android.os.Bundle().apply {
+                    putString("barcodeWidths", "initial=$initialSpan rotated=$rotatedSpan")
+                })
+            }
+        } finally {
+            repository.deleteCard(card.id)
+        }
+    }
 
     @Test
     fun brandedCardCanEnlargeItsCodeAndReturnWithoutChangingMembership() {
