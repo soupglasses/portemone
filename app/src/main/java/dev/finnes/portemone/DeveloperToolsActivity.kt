@@ -3,10 +3,6 @@
 
 package dev.finnes.portemone
 
-import dev.finnes.portemone.notifications.NotificationPreferences
-
-import androidx.compose.ui.res.stringResource
-
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -24,10 +20,16 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import dev.finnes.portemone.diagnostics.AppDiagnostics
+import dev.finnes.portemone.location.GeofenceCoordinator
+import dev.finnes.portemone.location.LocationSettings
+import dev.finnes.portemone.notifications.CardNotificationManager
+import dev.finnes.portemone.notifications.NotificationPreferences
 import dev.finnes.portemone.ui.theme.WalletTheme
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch

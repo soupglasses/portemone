@@ -1,15 +1,16 @@
 // SPDX-FileCopyrightText: 2026 Sofie Finnes <sofie+git@finnes.dev>
 // SPDX-License-Identifier: EUPL-1.2
 
-package dev.finnes.portemone
-
-import dev.finnes.portemone.cards.CardWriter
+package dev.finnes.portemone.cards
 
 import android.app.Application
 import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import dev.finnes.portemone.Card
+import dev.finnes.portemone.R
 import dev.finnes.portemone.imports.PKPassImporter
+import dev.finnes.portemone.userMessage
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

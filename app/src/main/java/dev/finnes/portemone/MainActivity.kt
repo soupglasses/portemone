@@ -35,6 +35,10 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dev.finnes.portemone.diagnostics.AppDiagnostics
+import dev.finnes.portemone.location.CardProximity
+import dev.finnes.portemone.location.LocationSettings
+import dev.finnes.portemone.notifications.CardNotificationManager
 import dev.finnes.portemone.ui.theme.WalletTheme
 import kotlinx.coroutines.launch
 

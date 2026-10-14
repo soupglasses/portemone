@@ -6,6 +6,10 @@ package dev.finnes.portemone
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import dev.finnes.portemone.diagnostics.AppDiagnostics
+import dev.finnes.portemone.location.CardProximity
+import dev.finnes.portemone.location.GeofenceCoordinator
+import dev.finnes.portemone.location.LocationSettings
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job

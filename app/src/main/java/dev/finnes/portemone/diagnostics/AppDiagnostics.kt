@@ -1,16 +1,12 @@
 // SPDX-FileCopyrightText: 2026 Sofie Finnes <sofie+git@finnes.dev>
 // SPDX-License-Identifier: EUPL-1.2
 
-package dev.finnes.portemone
-
-import dev.finnes.portemone.notifications.NotificationPreferences
-
-import dev.finnes.portemone.notifications.integrations.SamsungNowBar
-import dev.finnes.portemone.notifications.integrations.CompanionNotificationClient
+package dev.finnes.portemone.diagnostics
 
 import android.Manifest
 import android.app.ActivityManager
 import android.app.NotificationManager
+import android.app.usage.UsageStatsManager
 import android.content.ClipData
 import android.content.Context
 import android.content.Intent
@@ -18,19 +14,28 @@ import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.os.Build
 import android.os.PowerManager
-import android.app.usage.UsageStatsManager
 import android.provider.Settings
 import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import dev.finnes.portemone.Card
+import dev.finnes.portemone.SampleCard
+import dev.finnes.portemone.TestCard
+import dev.finnes.portemone.cards.LocalCardRepository
+import dev.finnes.portemone.location.GeofenceCoordinator
+import dev.finnes.portemone.location.LocationSettings
+import dev.finnes.portemone.notifications.NotificationHealth
+import dev.finnes.portemone.notifications.NotificationPreferences
+import dev.finnes.portemone.notifications.integrations.CompanionNotificationClient
+import dev.finnes.portemone.notifications.integrations.SamsungNowBar
 import java.io.File
 import java.time.Instant
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 /** Local, bounded diagnostics. File IO is serialized off the UI and geofence receiver threads. */
 object AppDiagnostics {

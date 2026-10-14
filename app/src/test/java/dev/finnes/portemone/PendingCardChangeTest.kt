@@ -3,6 +3,7 @@
 
 package dev.finnes.portemone
 
+import dev.finnes.portemone.cards.changedStoreIds
 import org.junit.Assert.*
 import org.junit.Test
 

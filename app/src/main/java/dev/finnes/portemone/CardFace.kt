@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
+import dev.finnes.portemone.notifications.NotificationCardRenderer
 
 /** Share the notification's native face; carousel pages retain their actual layout while moving. */
 @Composable

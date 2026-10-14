@@ -4,15 +4,14 @@
 package dev.finnes.portemone.cards
 
 import android.content.Context
-import dev.finnes.portemone.AppDiagnostics
 import dev.finnes.portemone.Card
 import dev.finnes.portemone.CardChangeWork
-import dev.finnes.portemone.CardNotificationManager
-import dev.finnes.portemone.LocalCardRepository
-import dev.finnes.portemone.LocationSettings
 import dev.finnes.portemone.R
 import dev.finnes.portemone.StoreLocation
 import dev.finnes.portemone.TestCard
+import dev.finnes.portemone.diagnostics.AppDiagnostics
+import dev.finnes.portemone.location.LocationSettings
+import dev.finnes.portemone.notifications.CardNotificationManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 

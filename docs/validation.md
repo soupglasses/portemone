@@ -58,8 +58,9 @@ separately simulates movement-circle replacement with a three-minute delay at 1.
 m/s, checking that every store arrival remains monitored. Selection computes each
 candidate's geographic distance once before sorting. Both scale tests have a generous
 ten-second regression timeout; this is not a device benchmark or a guarantee of
-provider delivery latency. The 99-store provider scenario compiles but still needs an
-emulator/device rerun; the archived provider results used the 80-store cap.
+provider delivery latency. Both Play services and Framework passed the 99-store
+provider scenario on an isolated API 36 emulator; the older archived provider
+results used the 80-store cap.
 
 Physical walking, driving, very dense overlapping stores, Doze delivery latency
 and microG compatibility still need device evidence. Synthetic provider fixes

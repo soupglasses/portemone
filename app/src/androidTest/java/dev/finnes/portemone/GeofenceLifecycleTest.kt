@@ -9,6 +9,11 @@ import android.location.Location
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import dev.finnes.portemone.cards.LocalCardRepository
+import dev.finnes.portemone.location.GeofenceCoordinator
+import dev.finnes.portemone.location.LocationSettings
+import dev.finnes.portemone.notifications.CardNotificationManager
+import dev.finnes.portemone.notifications.CardNotificationStyle
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
 import org.junit.Test

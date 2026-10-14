@@ -1,13 +1,22 @@
 // SPDX-FileCopyrightText: 2026 Sofie Finnes <sofie+git@finnes.dev>
 // SPDX-License-Identifier: EUPL-1.2
 
-package dev.finnes.portemone
+package dev.finnes.portemone.notifications
 
 import android.app.PendingIntent
 import android.content.Context
 import android.graphics.Color
 import android.util.TypedValue
 import android.widget.RemoteViews
+import dev.finnes.portemone.BarcodeRenderer
+import dev.finnes.portemone.BarcodeType
+import dev.finnes.portemone.Card
+import dev.finnes.portemone.CardActivity
+import dev.finnes.portemone.CardAppearance
+import dev.finnes.portemone.CardFieldSection
+import dev.finnes.portemone.PassImages
+import dev.finnes.portemone.R
+import dev.finnes.portemone.diagnostics.AppDiagnostics
 import kotlin.math.roundToInt
 
 /** Landscape membership faces. Only the machine-readable code is a bitmap. */

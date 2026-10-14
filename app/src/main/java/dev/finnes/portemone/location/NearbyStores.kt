@@ -1,8 +1,11 @@
 // SPDX-FileCopyrightText: 2026 Sofie Finnes <sofie+git@finnes.dev>
 // SPDX-License-Identifier: EUPL-1.2
 
-package dev.finnes.portemone
+package dev.finnes.portemone.location
 
+import dev.finnes.portemone.Card
+import dev.finnes.portemone.StoreLocation
+import dev.finnes.portemone.isUsable
 import kotlin.math.*
 
 object NearbyStores {

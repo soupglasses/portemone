@@ -1,17 +1,28 @@
 // SPDX-FileCopyrightText: 2026 Sofie Finnes <sofie+git@finnes.dev>
 // SPDX-License-Identifier: EUPL-1.2
 
-package dev.finnes.portemone
+package dev.finnes.portemone.cards
 
 import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import dev.finnes.portemone.BarcodeType
+import dev.finnes.portemone.Card
+import dev.finnes.portemone.LocationOrigin
+import dev.finnes.portemone.MAX_CARD_LOCATIONS
+import dev.finnes.portemone.R
+import dev.finnes.portemone.StoreLocation
+import dev.finnes.portemone.StoreRadiusRange
+import dev.finnes.portemone.UserFacingException
+import dev.finnes.portemone.diagnostics.AppDiagnostics
+import dev.finnes.portemone.isUsable
+import dev.finnes.portemone.validateCard
+import java.util.UUID
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import org.json.JSONArray
-import java.util.UUID
 
 /** Memberships, circles and original pass packages commit locally and atomically. */
 class LocalCardRepository internal constructor(

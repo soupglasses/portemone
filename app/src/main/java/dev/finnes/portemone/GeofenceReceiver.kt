@@ -3,13 +3,16 @@
 
 package dev.finnes.portemone
 
+import android.app.ActivityManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.app.ActivityManager
 import android.os.SystemClock
-import dev.finnes.portemone.location.PlayServicesGeofenceBackend
+import dev.finnes.portemone.diagnostics.AppDiagnostics
 import dev.finnes.portemone.location.FrameworkGeofenceBackend
+import dev.finnes.portemone.location.GeofenceCoordinator
+import dev.finnes.portemone.location.LocationSettings
+import dev.finnes.portemone.location.PlayServicesGeofenceBackend
 import kotlinx.coroutines.*
 
 class GeofenceReceiver : BroadcastReceiver() {

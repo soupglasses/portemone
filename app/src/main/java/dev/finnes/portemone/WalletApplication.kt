@@ -6,6 +6,9 @@ package dev.finnes.portemone
 import android.app.Activity
 import android.app.Application
 import android.os.Bundle
+import dev.finnes.portemone.diagnostics.AppDiagnostics
+import dev.finnes.portemone.location.GeofenceCoordinator
+import dev.finnes.portemone.location.LocationSettings
 import kotlinx.coroutines.launch
 
 class WalletApplication : Application() {

@@ -3,11 +3,10 @@
 
 package dev.finnes.portemone.notifications.integrations
 
-import dev.finnes.portemone.notifications.NotificationPreferences
-
-import dev.finnes.portemone.R
 import android.content.Context
-import dev.finnes.portemone.LocationSettings
+import dev.finnes.portemone.R
+import dev.finnes.portemone.location.LocationSettings
+import dev.finnes.portemone.notifications.NotificationPreferences
 
 /** User preference is independent of the device-specific notification host. */
 enum class NotificationPresentation(@param:androidx.annotation.StringRes val labelRes: Int) {

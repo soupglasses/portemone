@@ -1,10 +1,13 @@
 // SPDX-FileCopyrightText: 2026 Sofie Finnes <sofie+git@finnes.dev>
 // SPDX-License-Identifier: EUPL-1.2
 
-package dev.finnes.portemone
+package dev.finnes.portemone.location
 
 import android.location.Location
 import android.os.SystemClock
+import dev.finnes.portemone.Card
+import dev.finnes.portemone.StoreLocation
+import dev.finnes.portemone.isUsable
 
 /** Distance ranks choices; only geofence presence decides which cards are nearby. */
 object CardProximity {

@@ -3,22 +3,16 @@
 
 package dev.finnes.portemone
 
-import androidx.compose.ui.platform.LocalResources
-import androidx.compose.ui.res.stringResource
-
-import dev.finnes.portemone.notifications.integrations.SamsungNowBar
-import dev.finnes.portemone.notifications.integrations.CompanionNotificationClient
-
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.IntentSenderRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -32,13 +26,23 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import dev.finnes.portemone.diagnostics.AppDiagnostics
+import dev.finnes.portemone.location.GeofenceCoordinator
+import dev.finnes.portemone.location.LocationSettings
+import dev.finnes.portemone.notifications.HealthDestination
+import dev.finnes.portemone.notifications.NotificationHealth
+import dev.finnes.portemone.notifications.NotificationHealthItem
+import dev.finnes.portemone.notifications.integrations.CompanionNotificationClient
+import dev.finnes.portemone.notifications.integrations.SamsungNowBar
 import dev.finnes.portemone.ui.theme.WalletTheme
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch

@@ -1,18 +1,12 @@
 // SPDX-FileCopyrightText: 2026 Sofie Finnes <sofie+git@finnes.dev>
 // SPDX-License-Identifier: EUPL-1.2
 
-package dev.finnes.portemone
-
-import androidx.compose.ui.platform.LocalResources
-import androidx.compose.ui.res.stringResource
-
-import dev.finnes.portemone.cards.editor.AndroidLocationEditorSource
-import dev.finnes.portemone.cards.editor.LocationEditorState
+package dev.finnes.portemone.cards.editor
 
 import android.Manifest
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -26,13 +20,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import kotlinx.coroutines.launch
+import dev.finnes.portemone.Card
+import dev.finnes.portemone.LocationOrigin
+import dev.finnes.portemone.MAX_CARD_LOCATIONS
+import dev.finnes.portemone.R
+import dev.finnes.portemone.StoreLocation
+import dev.finnes.portemone.StoreMap
 import kotlin.math.roundToInt
+import kotlinx.coroutines.launch
 
 @Composable
 fun CardLocations(

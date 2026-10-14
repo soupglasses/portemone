@@ -1,18 +1,24 @@
 // SPDX-FileCopyrightText: 2026 Sofie Finnes <sofie+git@finnes.dev>
 // SPDX-License-Identifier: EUPL-1.2
 
-package dev.finnes.portemone
-
-import androidx.core.content.edit
+package dev.finnes.portemone.location
 
 import android.content.Context
 import android.content.SharedPreferences
 import android.location.Location
 import android.provider.Settings
+import androidx.core.content.edit
+import dev.finnes.portemone.BarcodeType
+import dev.finnes.portemone.Card
+import dev.finnes.portemone.R
+import dev.finnes.portemone.StoreLocation
+import dev.finnes.portemone.StoreRadiusRange
+import dev.finnes.portemone.TestCard
+import dev.finnes.portemone.cards.LocalCardRepository
+import dev.finnes.portemone.diagnostics.AppDiagnostics
+import dev.finnes.portemone.isUsable
 import java.security.MessageDigest
 import java.time.Instant
-import dev.finnes.portemone.location.LocationEngine
-import dev.finnes.portemone.location.LocationBackendFactory
 
 /** Geofence state stays local; membership locations are owned by the card repository. */
 class LocationSettings(private val context: Context) {

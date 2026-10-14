@@ -3,28 +3,30 @@
 
 package dev.finnes.portemone
 
-import androidx.compose.ui.platform.LocalResources
-import androidx.compose.ui.res.stringResource
-
 import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.IntentSenderRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.platform.testTag
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import dev.finnes.portemone.diagnostics.AppDiagnostics
+import dev.finnes.portemone.location.GeofenceCoordinator
 import dev.finnes.portemone.location.LocationEngine
+import dev.finnes.portemone.location.LocationSettings
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 

@@ -3,9 +3,6 @@
 
 package dev.finnes.portemone
 
-import androidx.compose.ui.platform.LocalResources
-import androidx.compose.ui.res.stringResource
-
 import android.app.KeyguardManager
 import android.content.Context
 import android.content.Intent
@@ -13,8 +10,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.WindowManager
 import android.widget.ImageView
-import dev.finnes.portemone.imports.localizedPassNotice
-
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
@@ -35,7 +30,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -44,6 +41,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dev.finnes.portemone.cards.CardManagementModel
+import dev.finnes.portemone.cards.LocalCardRepository
+import dev.finnes.portemone.diagnostics.AppDiagnostics
+import dev.finnes.portemone.imports.localizedPassNotice
+import dev.finnes.portemone.location.GeofenceCoordinator
+import dev.finnes.portemone.location.LocationSettings
 import dev.finnes.portemone.ui.theme.WalletTheme
 import kotlin.math.min
 import kotlinx.coroutines.CancellationException

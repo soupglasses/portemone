@@ -9,9 +9,9 @@ import dev.finnes.portemone.LocationOrigin
 import dev.finnes.portemone.R
 import dev.finnes.portemone.StoreLocation
 import dev.finnes.portemone.StoreRadiusRange
-import kotlinx.coroutines.CancellationException
 import java.util.Locale
 import java.util.UUID
+import kotlinx.coroutines.CancellationException
 
 internal data class EditorPosition(val latitude: Double, val longitude: Double)
 internal data class StoreSearchResult(val label: String, val latitude: Double, val longitude: Double)

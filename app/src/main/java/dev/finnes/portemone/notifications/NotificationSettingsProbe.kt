@@ -1,15 +1,15 @@
 // SPDX-FileCopyrightText: 2026 Sofie Finnes <sofie+git@finnes.dev>
 // SPDX-License-Identifier: EUPL-1.2
 
-package dev.finnes.portemone
-
-import dev.finnes.portemone.notifications.integrations.SamsungNowBar
+package dev.finnes.portemone.notifications
 
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.provider.Settings
+import dev.finnes.portemone.R
+import dev.finnes.portemone.notifications.integrations.SamsungNowBar
 
 internal data class SettingCheck(val ready: Boolean, val detail: String, val unknown: Boolean = false)
 

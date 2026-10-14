@@ -4,6 +4,16 @@
 package dev.finnes.portemone.imports
 
 import dev.finnes.portemone.*
+import dev.finnes.portemone.cards.CardStorageCodec
+import java.io.ByteArrayOutputStream
+import java.math.BigInteger
+import java.security.KeyPairGenerator
+import java.security.MessageDigest
+import java.time.Instant
+import java.util.Date
+import java.util.Locale
+import java.util.zip.ZipEntry
+import java.util.zip.ZipOutputStream
 import org.bouncycastle.asn1.ASN1ObjectIdentifier
 import org.bouncycastle.asn1.DERUTF8String
 import org.bouncycastle.asn1.x500.X500Name
@@ -19,15 +29,6 @@ import org.json.JSONArray
 import org.json.JSONObject
 import org.junit.Assert.*
 import org.junit.Test
-import java.io.ByteArrayOutputStream
-import java.math.BigInteger
-import java.security.KeyPairGenerator
-import java.security.MessageDigest
-import java.time.Instant
-import java.util.Date
-import java.util.Locale
-import java.util.zip.ZipEntry
-import java.util.zip.ZipOutputStream
 
 class PKPassImporterTest {
     private fun parse(json: JSONObject) = PKPassImporter.parse(json) { "Location $it" }

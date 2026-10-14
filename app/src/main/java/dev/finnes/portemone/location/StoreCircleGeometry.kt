@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Sofie Finnes <sofie+git@finnes.dev>
 // SPDX-License-Identifier: EUPL-1.2
 
-package dev.finnes.portemone
+package dev.finnes.portemone.location
 
 import kotlin.math.*
 

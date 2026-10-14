@@ -8,6 +8,7 @@ import android.graphics.Color
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
 import com.google.zxing.MultiFormatWriter
+import dev.finnes.portemone.diagnostics.AppDiagnostics
 
 object BarcodeRenderer {
     data class FittedQr(val bitmap: Bitmap, val symbolWidth: Int)

@@ -10,10 +10,13 @@ import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.test.core.app.ActivityScenario
 import androidx.test.platform.app.InstrumentationRegistry
+import dev.finnes.portemone.cards.LocalCardRepository
+import dev.finnes.portemone.diagnostics.AppDiagnostics
+import dev.finnes.portemone.location.LocationSettings
+import java.util.UUID
 import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
-import java.util.UUID
 
 class CardLockPrivacyTest {
     @get:Rule

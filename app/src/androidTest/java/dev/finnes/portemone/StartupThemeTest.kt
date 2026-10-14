@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.core.graphics.ColorUtils
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import dev.finnes.portemone.cards.LocalCardRepository
 import org.junit.Assert.*
 import org.junit.Test
 import org.junit.runner.RunWith

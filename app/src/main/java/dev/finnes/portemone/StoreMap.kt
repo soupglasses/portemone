@@ -3,9 +3,6 @@
 
 package dev.finnes.portemone
 
-import androidx.compose.ui.platform.LocalResources
-import androidx.compose.ui.res.stringResource
-
 import android.content.Context
 import android.view.MotionEvent
 import androidx.compose.foundation.background
@@ -15,10 +12,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalResources
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -28,6 +27,10 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import dev.finnes.portemone.diagnostics.AppDiagnostics
+import dev.finnes.portemone.location.StoreCircleGeometry
+import java.io.File
+import kotlin.math.*
 import kotlinx.coroutines.delay
 import okhttp3.Cache
 import okhttp3.OkHttpClient
@@ -43,8 +46,6 @@ import org.maplibre.android.maps.MapView
 import org.maplibre.android.maps.Style
 import org.maplibre.android.module.http.HttpRequestUtil
 import org.maplibre.android.style.sources.GeoJsonSource
-import java.io.File
-import kotlin.math.*
 
 private object WalletMapRuntime {
     private var initialized = false

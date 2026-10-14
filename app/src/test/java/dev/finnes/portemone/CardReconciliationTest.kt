@@ -3,6 +3,7 @@
 
 package dev.finnes.portemone
 
+import dev.finnes.portemone.location.CardProximity
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull

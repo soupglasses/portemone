@@ -3,17 +3,16 @@
 
 package dev.finnes.portemone.notifications.integrations
 
-import dev.finnes.portemone.notifications.NotificationPreferences
-
 import android.app.Notification
 import android.app.NotificationManager
 import android.content.Context
 import android.service.notification.StatusBarNotification
-import dev.finnes.portemone.AppDiagnostics
 import dev.finnes.portemone.Card
-import dev.finnes.portemone.CardNotificationStyle
-import dev.finnes.portemone.LocationSettings
-import dev.finnes.portemone.NotificationCardRenderer
+import dev.finnes.portemone.diagnostics.AppDiagnostics
+import dev.finnes.portemone.location.LocationSettings
+import dev.finnes.portemone.notifications.CardNotificationStyle
+import dev.finnes.portemone.notifications.NotificationCardRenderer
+import dev.finnes.portemone.notifications.NotificationPreferences
 
 /** A blocked notification must never be rerouted to evade the user's notification settings. */
 internal enum class PostResult { POSTED, BLOCKED, UNAVAILABLE }

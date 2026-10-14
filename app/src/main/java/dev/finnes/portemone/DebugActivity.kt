@@ -3,8 +3,6 @@
 
 package dev.finnes.portemone
 
-import androidx.compose.ui.res.stringResource
-
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Intent
@@ -20,9 +18,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dev.finnes.portemone.diagnostics.AppDiagnostics
 import dev.finnes.portemone.ui.theme.WalletTheme
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers

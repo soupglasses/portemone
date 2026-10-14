@@ -3,16 +3,15 @@
 
 package dev.finnes.portemone
 
-import dev.finnes.portemone.notifications.NotificationPreferences
-
-import dev.finnes.portemone.notifications.integrations.NotificationPresentation
-
-import dev.finnes.portemone.notifications.integrations.CompanionNotificationClient
-
 import android.app.NotificationManager
 import android.os.Build
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import dev.finnes.portemone.location.LocationSettings
+import dev.finnes.portemone.notifications.CardNotificationManager
+import dev.finnes.portemone.notifications.NotificationPreferences
+import dev.finnes.portemone.notifications.integrations.CompanionNotificationClient
+import dev.finnes.portemone.notifications.integrations.NotificationPresentation
 import org.junit.Assert.*
 import org.junit.Assume.assumeTrue
 import org.junit.Test

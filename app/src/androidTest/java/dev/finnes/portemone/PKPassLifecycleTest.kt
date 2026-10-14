@@ -10,15 +10,18 @@ import androidx.core.content.FileProvider
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import dev.finnes.portemone.cards.LocalCardRepository
+import dev.finnes.portemone.location.LocationSettings
+import dev.finnes.portemone.notifications.NotificationCardRenderer
+import java.io.ByteArrayOutputStream
+import java.util.UUID
+import java.util.zip.ZipEntry
+import java.util.zip.ZipOutputStream
 import org.json.JSONObject
 import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.io.ByteArrayOutputStream
-import java.util.UUID
-import java.util.zip.ZipEntry
-import java.util.zip.ZipOutputStream
 
 @RunWith(AndroidJUnit4::class)
 class PKPassLifecycleTest {

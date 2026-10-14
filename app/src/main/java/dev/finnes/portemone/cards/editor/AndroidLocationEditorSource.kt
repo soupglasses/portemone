@@ -5,7 +5,7 @@ package dev.finnes.portemone.cards.editor
 
 import android.content.Context
 import android.location.Geocoder
-import dev.finnes.portemone.GeofenceCoordinator
+import dev.finnes.portemone.location.GeofenceCoordinator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 

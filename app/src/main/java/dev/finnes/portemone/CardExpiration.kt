@@ -8,11 +8,13 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import dev.finnes.portemone.cards.LocalCardRepository
+import dev.finnes.portemone.location.GeofenceCoordinator
+import java.time.Instant
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import java.time.Instant
 
 /** Inexact expiry cleanup avoids asking for an unrelated exact-alarm permission. */
 internal object CardExpiration {

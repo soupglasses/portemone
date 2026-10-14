@@ -21,18 +21,23 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.withContentDescription
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
+import dev.finnes.portemone.cards.LocalCardRepository
+import dev.finnes.portemone.location.GeofenceCoordinator
+import dev.finnes.portemone.location.LocationSettings
+import dev.finnes.portemone.location.NearbyStores
+import dev.finnes.portemone.notifications.CardNotificationManager
+import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.util.concurrent.TimeUnit
 
 /** Exercises actual foreground lifecycle, Play services fixes, and Android notifications. */
 @RequiresDeviceSetup("scripts/test-location-engines.sh controls real providers and foreground recovery")

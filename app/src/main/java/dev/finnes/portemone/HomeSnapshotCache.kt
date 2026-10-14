@@ -5,6 +5,8 @@ package dev.finnes.portemone
 
 import android.content.Context
 import androidx.core.content.edit
+import dev.finnes.portemone.diagnostics.AppDiagnostics
+import dev.finnes.portemone.location.CardProximity
 import org.json.JSONArray
 import org.json.JSONObject
 

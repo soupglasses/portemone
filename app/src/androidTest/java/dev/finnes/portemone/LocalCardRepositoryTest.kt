@@ -7,10 +7,12 @@ import android.location.Location
 import android.os.SystemClock
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import dev.finnes.portemone.cards.LocalCardRepository
+import dev.finnes.portemone.location.GeofenceCoordinator
+import java.util.UUID
 import org.junit.Assert.*
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.util.UUID
 
 @RunWith(AndroidJUnit4::class)
 class LocalCardRepositoryTest {

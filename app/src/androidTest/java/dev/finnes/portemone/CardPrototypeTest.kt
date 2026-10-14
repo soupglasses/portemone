@@ -3,12 +3,6 @@
 
 package dev.finnes.portemone
 
-import dev.finnes.portemone.notifications.NotificationPreferences
-
-import dev.finnes.portemone.notifications.integrations.NotificationPresentation
-
-import dev.finnes.portemone.notifications.integrations.SamsungNowBar
-
 import android.app.Notification
 import android.app.NotificationManager
 import android.graphics.Bitmap
@@ -23,12 +17,20 @@ import com.google.zxing.BinaryBitmap
 import com.google.zxing.MultiFormatReader
 import com.google.zxing.RGBLuminanceSource
 import com.google.zxing.common.HybridBinarizer
+import dev.finnes.portemone.cards.LocalCardRepository
+import dev.finnes.portemone.location.LocationSettings
+import dev.finnes.portemone.notifications.CardNotificationManager
+import dev.finnes.portemone.notifications.CardNotificationStyle
+import dev.finnes.portemone.notifications.NotificationCardRenderer
+import dev.finnes.portemone.notifications.NotificationPreferences
+import dev.finnes.portemone.notifications.integrations.NotificationPresentation
+import dev.finnes.portemone.notifications.integrations.SamsungNowBar
+import kotlin.math.roundToInt
+import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before
-import org.junit.After
 import org.junit.Test
 import org.junit.runner.RunWith
-import kotlin.math.roundToInt
 
 @RunWith(AndroidJUnit4::class)
 class CardPrototypeTest {

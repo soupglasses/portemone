@@ -1,12 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Sofie Finnes <sofie+git@finnes.dev>
 // SPDX-License-Identifier: EUPL-1.2
 
-package dev.finnes.portemone
-
-import dev.finnes.portemone.notifications.NotificationPreferences
-
-import androidx.compose.ui.platform.LocalResources
-import androidx.compose.ui.res.stringResource
+package dev.finnes.portemone.notifications
 
 import android.Manifest
 import android.content.ActivityNotFoundException
@@ -20,9 +15,15 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
+import dev.finnes.portemone.BarcodeType
+import dev.finnes.portemone.R
+import dev.finnes.portemone.SampleCard
+import dev.finnes.portemone.location.LocationSettings
 import dev.finnes.portemone.notifications.integrations.NotificationPresentation
 import dev.finnes.portemone.notifications.integrations.NotificationPresentationStatus
 

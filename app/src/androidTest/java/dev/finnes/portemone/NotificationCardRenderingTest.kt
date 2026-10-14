@@ -20,13 +20,14 @@ import com.google.zxing.BinaryBitmap
 import com.google.zxing.MultiFormatReader
 import com.google.zxing.RGBLuminanceSource
 import com.google.zxing.common.HybridBinarizer
-import org.junit.Assert.*
-import org.junit.Test
-import org.junit.runner.RunWith
+import dev.finnes.portemone.notifications.NotificationCardRenderer
 import java.io.File
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
+import org.junit.Assert.*
+import org.junit.Test
+import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class NotificationCardRenderingTest {

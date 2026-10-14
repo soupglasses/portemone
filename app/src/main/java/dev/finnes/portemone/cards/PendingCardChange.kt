@@ -1,7 +1,9 @@
 // SPDX-FileCopyrightText: 2026 Sofie Finnes <sofie+git@finnes.dev>
 // SPDX-License-Identifier: EUPL-1.2
 
-package dev.finnes.portemone
+package dev.finnes.portemone.cards
+
+import dev.finnes.portemone.StoreLocation
 
 /** A coalesced outbox entry; acknowledging an older attempt must not erase a newer edit. */
 internal data class PendingCardChange(

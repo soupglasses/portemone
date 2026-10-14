@@ -3,12 +3,12 @@
 
 package dev.finnes.portemone.location
 
-import dev.finnes.portemone.R
 import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
+import dev.finnes.portemone.R
 import dev.finnes.portemone.StoreLocation
 
 /** One position request, with no service or long-lived subscription. */

@@ -3,7 +3,6 @@
 
 package dev.finnes.portemone.location
 
-import dev.finnes.portemone.R
 import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.content.Context
@@ -15,16 +14,16 @@ import android.net.Uri
 import android.os.CancellationSignal
 import android.os.SystemClock
 import dev.finnes.portemone.GeofenceReceiver
-import dev.finnes.portemone.NearbyStores
+import dev.finnes.portemone.R
 import dev.finnes.portemone.StoreLocation
+import kotlin.coroutines.resume
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.coroutines.selects.select
-import kotlin.coroutines.resume
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 
 @SuppressLint("MissingPermission")
 internal class FrameworkCurrentLocationBackend(private val context: Context) : CurrentLocationBackend {

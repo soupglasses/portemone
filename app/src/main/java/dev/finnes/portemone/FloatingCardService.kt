@@ -3,8 +3,6 @@
 
 package dev.finnes.portemone
 
-import androidx.compose.ui.res.stringResource
-
 import android.app.KeyguardManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -38,7 +36,9 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.compose.ui.res.stringResource
 import androidx.core.app.NotificationCompat
+import dev.finnes.portemone.diagnostics.AppDiagnostics
 import kotlin.math.min
 import kotlin.math.roundToInt
 

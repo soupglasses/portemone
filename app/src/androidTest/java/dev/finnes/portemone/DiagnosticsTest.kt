@@ -12,14 +12,16 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.core.content.FileProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import org.junit.Assert.*
-import org.junit.Rule
-import org.junit.Test
-import org.junit.runner.RunWith
+import dev.finnes.portemone.cards.LocalCardRepository
+import dev.finnes.portemone.diagnostics.AppDiagnostics
 import java.io.File
 import java.time.Instant
 import java.util.UUID
 import java.util.zip.ZipInputStream
+import org.junit.Assert.*
+import org.junit.Rule
+import org.junit.Test
+import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class DiagnosticsTest {

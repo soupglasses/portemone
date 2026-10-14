@@ -3,8 +3,6 @@
 
 package dev.finnes.portemone
 
-import dev.finnes.portemone.notifications.NotificationPreferences
-
 import android.app.NotificationManager
 import android.content.Context
 import android.location.Location
@@ -13,7 +11,12 @@ import android.location.provider.ProviderProperties
 import android.os.Build
 import android.os.SystemClock
 import androidx.test.platform.app.InstrumentationRegistry
+import dev.finnes.portemone.cards.LocalCardRepository
+import dev.finnes.portemone.location.GeofenceCoordinator
 import dev.finnes.portemone.location.LocationEngine
+import dev.finnes.portemone.location.LocationSettings
+import dev.finnes.portemone.notifications.CardNotificationStyle
+import dev.finnes.portemone.notifications.NotificationPreferences
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
 import org.junit.Assume.assumeTrue

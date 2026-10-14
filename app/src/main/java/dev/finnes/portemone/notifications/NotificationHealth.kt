@@ -1,14 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Sofie Finnes <sofie+git@finnes.dev>
 // SPDX-License-Identifier: EUPL-1.2
 
-package dev.finnes.portemone
-
-import dev.finnes.portemone.notifications.NotificationPreferences
-
-import dev.finnes.portemone.notifications.integrations.SamsungNowBar
-import dev.finnes.portemone.notifications.integrations.CompanionNotificationClient
-
-import dev.finnes.portemone.location.LocationEngine
+package dev.finnes.portemone.notifications
 
 import android.Manifest
 import android.app.NotificationManager
@@ -20,6 +13,14 @@ import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import androidx.core.content.ContextCompat
+import dev.finnes.portemone.R
+import dev.finnes.portemone.SettingsActivity
+import dev.finnes.portemone.highlightSettingsPreference
+import dev.finnes.portemone.location.GeofenceCoordinator
+import dev.finnes.portemone.location.LocationEngine
+import dev.finnes.portemone.location.LocationSettings
+import dev.finnes.portemone.notifications.integrations.CompanionNotificationClient
+import dev.finnes.portemone.notifications.integrations.SamsungNowBar
 
 internal enum class HealthDestination { APP_NOTIFICATIONS, CHANNEL, NOTIFICATIONS, PERMISSIONS, LOCATION, AUTOMATIC, SAMSUNG, DEVELOPER, PIXEL_HELPER }
 

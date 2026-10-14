@@ -3,12 +3,6 @@
 
 package dev.finnes.portemone.notifications.integrations
 
-import dev.finnes.portemone.AppDiagnostics
-import dev.finnes.portemone.Card
-import dev.finnes.portemone.CardActivity
-import dev.finnes.portemone.NotificationCardRenderer
-import dev.finnes.portemone.R
-
 import android.Manifest
 import android.app.Notification
 import android.app.NotificationManager
@@ -18,6 +12,11 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.util.TypedValue
+import dev.finnes.portemone.Card
+import dev.finnes.portemone.CardActivity
+import dev.finnes.portemone.R
+import dev.finnes.portemone.diagnostics.AppDiagnostics
+import dev.finnes.portemone.notifications.NotificationCardRenderer
 import kotlin.math.roundToInt
 
 /** Optional notification host. Location and membership data remain in the modern app. */

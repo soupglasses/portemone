@@ -1,14 +1,10 @@
 // SPDX-FileCopyrightText: 2026 Sofie Finnes <sofie+git@finnes.dev>
 // SPDX-License-Identifier: EUPL-1.2
 
-package dev.finnes.portemone
+package dev.finnes.portemone.notifications
 
-import dev.finnes.portemone.notifications.NotificationPreferences
-
-import dev.finnes.portemone.notifications.integrations.NotificationBackends
-
-import android.app.NotificationChannel
 import android.app.Notification
+import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
@@ -22,6 +18,16 @@ import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.graphics.ColorUtils
+import dev.finnes.portemone.BarcodeRenderer
+import dev.finnes.portemone.BarcodeType
+import dev.finnes.portemone.Card
+import dev.finnes.portemone.CardActivity
+import dev.finnes.portemone.R
+import dev.finnes.portemone.SampleCard
+import dev.finnes.portemone.diagnostics.AppDiagnostics
+import dev.finnes.portemone.isUsable
+import dev.finnes.portemone.location.LocationSettings
+import dev.finnes.portemone.notifications.integrations.NotificationBackends
 import kotlin.math.roundToInt
 
 enum class CardNotificationStyle { NATIVE_PICTURE, CUSTOM_CARD, WIDE_EXPANDED, SAMSUNG_NOW_BAR }

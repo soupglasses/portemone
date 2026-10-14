@@ -1,9 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Sofie Finnes <sofie+git@finnes.dev>
 // SPDX-License-Identifier: EUPL-1.2
 
-package dev.finnes.portemone
-
-import dev.finnes.portemone.notifications.NotificationPreferences
+package dev.finnes.portemone.location
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -13,14 +11,28 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.os.SystemClock
 import androidx.core.content.ContextCompat
+import dev.finnes.portemone.BarcodeType
+import dev.finnes.portemone.CardExpiration
+import dev.finnes.portemone.CardWidgetProvider
+import dev.finnes.portemone.R
+import dev.finnes.portemone.RegionRefreshJob
+import dev.finnes.portemone.StoreLocation
+import dev.finnes.portemone.TestCard
+import dev.finnes.portemone.UserFacingException
+import dev.finnes.portemone.cards.LocalCardRepository
+import dev.finnes.portemone.diagnostics.AppDiagnostics
+import dev.finnes.portemone.isUsable
+import dev.finnes.portemone.notifications.CardNotificationManager
+import dev.finnes.portemone.notifications.CardNotificationStyle
+import dev.finnes.portemone.notifications.NotificationPreferences
+import dev.finnes.portemone.userMessage
+import java.util.UUID
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import java.util.UUID
-import dev.finnes.portemone.location.*
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 
 class GeofenceCoordinator internal constructor(
     context: Context,

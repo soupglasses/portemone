@@ -15,6 +15,9 @@ import androidx.test.espresso.matcher.RootMatchers.isDialog
 import androidx.test.espresso.matcher.ViewMatchers.withContentDescription
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import dev.finnes.portemone.cards.LocalCardRepository
+import java.io.FileInputStream
+import kotlin.math.abs
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -22,8 +25,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.maplibre.android.camera.CameraPosition
 import org.maplibre.android.maps.MapView
-import java.io.FileInputStream
-import kotlin.math.abs
 
 /** Run on an emulator with a swipe-only lock screen. Check rendered pixels, not just View existence. */
 @RequiresDeviceSetup("Requires network map tiles and a swipe-only lock screen")

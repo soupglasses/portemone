@@ -3,9 +3,6 @@
 
 package dev.finnes.portemone
 
-import androidx.compose.ui.platform.LocalResources
-import androidx.compose.ui.res.stringResource
-
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -15,10 +12,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalResources
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import dev.finnes.portemone.cards.editor.CardLocations
 import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)

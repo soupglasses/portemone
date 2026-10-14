@@ -5,8 +5,7 @@ package dev.finnes.portemone.notifications
 
 import android.content.Context
 import androidx.core.content.edit
-import dev.finnes.portemone.AppDiagnostics
-import dev.finnes.portemone.CardNotificationStyle
+import dev.finnes.portemone.diagnostics.AppDiagnostics
 import dev.finnes.portemone.notifications.integrations.NotificationPresentation
 import dev.finnes.portemone.notifications.integrations.SamsungNowBar
 

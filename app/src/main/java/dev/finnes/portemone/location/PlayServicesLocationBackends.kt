@@ -3,7 +3,6 @@
 
 package dev.finnes.portemone.location
 
-import dev.finnes.portemone.R
 import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.content.Context
@@ -17,13 +16,13 @@ import com.google.android.gms.location.*
 import com.google.android.gms.tasks.CancellationTokenSource
 import com.google.android.gms.tasks.Task
 import dev.finnes.portemone.GeofenceReceiver
-import dev.finnes.portemone.NearbyStores
+import dev.finnes.portemone.R
 import dev.finnes.portemone.StoreLocation
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withTimeoutOrNull
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
 
 @SuppressLint("MissingPermission")
 internal class PlayServicesCurrentLocationBackend(private val context: Context) : CurrentLocationBackend {

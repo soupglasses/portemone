@@ -3,14 +3,15 @@
 
 package dev.finnes.portemone
 
-import org.junit.Assert.*
-import org.junit.Test
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.BinaryBitmap
 import com.google.zxing.MultiFormatReader
 import com.google.zxing.MultiFormatWriter
 import com.google.zxing.RGBLuminanceSource
 import com.google.zxing.common.HybridBinarizer
+import dev.finnes.portemone.location.NearbyStores
+import org.junit.Assert.*
+import org.junit.Test
 
 class CardMatchingTest {
     @Test

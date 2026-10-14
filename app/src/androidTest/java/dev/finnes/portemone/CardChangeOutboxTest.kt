@@ -4,9 +4,10 @@
 package dev.finnes.portemone
 
 import androidx.test.platform.app.InstrumentationRegistry
+import dev.finnes.portemone.cards.LocalCardRepository
+import java.util.UUID
 import org.junit.Assert.*
 import org.junit.Test
-import java.util.UUID
 
 class CardChangeOutboxTest {
     private val context = InstrumentationRegistry.getInstrumentation().targetContext

@@ -3,10 +3,6 @@
 
 package dev.finnes.portemone.notifications.integrations
 
-import dev.finnes.portemone.AppDiagnostics
-import dev.finnes.portemone.Card
-import dev.finnes.portemone.R
-
 import android.app.Notification
 import android.content.Context
 import android.graphics.drawable.Icon
@@ -14,6 +10,9 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.RemoteViews
+import dev.finnes.portemone.Card
+import dev.finnes.portemone.R
+import dev.finnes.portemone.diagnostics.AppDiagnostics
 
 /**
  * Experimental Samsung host integration, separate from Android's public Live Updates API.

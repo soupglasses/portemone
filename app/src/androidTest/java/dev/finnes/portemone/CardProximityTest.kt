@@ -6,6 +6,7 @@ package dev.finnes.portemone
 import android.location.Location
 import android.os.SystemClock
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import dev.finnes.portemone.location.CardProximity
 import org.junit.Assert.*
 import org.junit.Test
 import org.junit.runner.RunWith

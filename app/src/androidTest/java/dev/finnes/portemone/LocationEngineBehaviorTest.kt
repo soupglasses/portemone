@@ -3,12 +3,6 @@
 
 package dev.finnes.portemone
 
-import dev.finnes.portemone.cards.CardWriter
-
-import dev.finnes.portemone.notifications.NotificationPreferences
-
-import dev.finnes.portemone.notifications.integrations.NotificationPresentation
-
 import android.app.NotificationManager
 import android.content.Context
 import android.location.Location
@@ -16,24 +10,33 @@ import android.location.LocationManager
 import android.location.provider.ProviderProperties
 import android.os.Build
 import android.os.SystemClock
-import androidx.test.core.app.ActivityScenario
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
-import org.junit.Rule
+import androidx.test.core.app.ActivityScenario
 import androidx.test.platform.app.InstrumentationRegistry
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.Tasks
+import dev.finnes.portemone.cards.CardWriter
+import dev.finnes.portemone.cards.LocalCardRepository
 import dev.finnes.portemone.location.*
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.coroutineScope
+import dev.finnes.portemone.location.GeofenceCoordinator
+import dev.finnes.portemone.location.LocationSettings
+import dev.finnes.portemone.location.NearbyStores
+import dev.finnes.portemone.notifications.CardNotificationManager
+import dev.finnes.portemone.notifications.CardNotificationStyle
+import dev.finnes.portemone.notifications.NotificationPreferences
+import dev.finnes.portemone.notifications.integrations.NotificationPresentation
+import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
 import org.junit.Assume.assumeTrue
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
-import java.util.concurrent.TimeUnit
 
 /** Shared observable-behavior contract, run against real provider APIs on an isolated emulator. */
 @RequiresDeviceSetup("scripts/test-location-engines.sh supplies mock providers and locationEngineTests")

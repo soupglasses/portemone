@@ -3,20 +3,13 @@
 
 package dev.finnes.portemone
 
-import dev.finnes.portemone.notifications.NotificationPreferences
-
-import dev.finnes.portemone.notifications.integrations.NotificationPresentation
-
-import dev.finnes.portemone.notifications.integrations.SamsungNowBar
-import dev.finnes.portemone.notifications.integrations.CompanionNotificationClient
-
 import android.Manifest
 import android.app.NotificationManager
-import android.content.pm.PackageManager
-import android.location.LocationManager
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.location.LocationManager
 import android.os.Build
 import android.os.ParcelFileDescriptor
 import android.os.SystemClock
@@ -29,11 +22,20 @@ import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import dev.finnes.portemone.location.LocationSettings
+import dev.finnes.portemone.notifications.CardNotificationManager
+import dev.finnes.portemone.notifications.HealthDestination
+import dev.finnes.portemone.notifications.NotificationHealth
+import dev.finnes.portemone.notifications.NotificationPreferences
+import dev.finnes.portemone.notifications.NotificationSettingsProbe
+import dev.finnes.portemone.notifications.integrations.CompanionNotificationClient
+import dev.finnes.portemone.notifications.integrations.NotificationPresentation
+import dev.finnes.portemone.notifications.integrations.SamsungNowBar
+import java.io.File
 import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.io.File
 
 /** Checks the setup journey against Android's real notification state, including return from Settings. */
 @RequiresDeviceSetup("Changes Android settings and requires separate granted/blocked permission runs")

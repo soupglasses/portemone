@@ -3,17 +3,19 @@
 
 package dev.finnes.portemone
 
-import dev.finnes.portemone.notifications.NotificationPreferences
-
-import dev.finnes.portemone.cards.CardWriter
-
 import android.Manifest
 import android.content.Context
 import android.location.Location
 import android.os.SystemClock
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.work.WorkManager
+import dev.finnes.portemone.cards.CardWriter
+import dev.finnes.portemone.cards.LocalCardRepository
 import dev.finnes.portemone.location.*
+import dev.finnes.portemone.location.GeofenceCoordinator
+import dev.finnes.portemone.location.LocationSettings
+import dev.finnes.portemone.notifications.CardNotificationManager
+import dev.finnes.portemone.notifications.NotificationPreferences
 import dev.finnes.portemone.notifications.integrations.NotificationPresentation
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.async

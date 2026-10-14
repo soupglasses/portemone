@@ -1,8 +1,16 @@
 // SPDX-FileCopyrightText: 2026 Sofie Finnes <sofie+git@finnes.dev>
 // SPDX-License-Identifier: EUPL-1.2
 
-package dev.finnes.portemone
+package dev.finnes.portemone.cards
 
+import dev.finnes.portemone.BarcodeType
+import dev.finnes.portemone.Card
+import dev.finnes.portemone.CardField
+import dev.finnes.portemone.CardFieldSection
+import dev.finnes.portemone.CardKind
+import dev.finnes.portemone.CardSource
+import dev.finnes.portemone.R
+import dev.finnes.portemone.StoreLocation
 import org.json.JSONObject
 
 /** Resource names survive APK upgrades; resource integers do not. */

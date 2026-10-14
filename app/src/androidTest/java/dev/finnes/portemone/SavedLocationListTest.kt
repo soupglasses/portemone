@@ -14,12 +14,15 @@ import androidx.test.espresso.intent.matcher.IntentMatchers.hasAction
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasData
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import dev.finnes.portemone.cards.CardStorageCodec
+import dev.finnes.portemone.cards.LocalCardRepository
+import dev.finnes.portemone.location.LocationSettings
+import java.util.UUID
 import org.hamcrest.Matchers.allOf
 import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.util.UUID
 
 @RunWith(AndroidJUnit4::class)
 class SavedLocationListTest {

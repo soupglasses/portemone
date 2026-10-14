@@ -12,15 +12,17 @@ import android.graphics.Bitmap
 import android.graphics.Paint
 import android.graphics.Typeface
 import android.os.Bundle
-import android.util.SizeF
 import android.util.Log
+import android.util.SizeF
 import android.util.TypedValue
 import android.view.View
 import android.widget.RemoteViews
 import androidx.core.graphics.ColorUtils
-import kotlin.math.min
-import kotlin.math.max
+import dev.finnes.portemone.diagnostics.AppDiagnostics
+import dev.finnes.portemone.location.LocationSettings
 import kotlin.math.ceil
+import kotlin.math.max
+import kotlin.math.min
 import kotlin.math.roundToInt
 
 class CardWidgetProvider : AppWidgetProvider() {
