@@ -112,8 +112,12 @@ class CardNavigationTest {
                     compose.onNodeWithText("Card details").performClick()
                     awaitViewer("Example One")
                 }
+                // Wait for Home to resume before relaunching; an injected key event
+                // can return while Android is still moving the scanner task away.
                 android.os.ParcelFileDescriptor.AutoCloseInputStream(
-                    instrumentation.uiAutomation.executeShellCommand("input keyevent KEYCODE_HOME")
+                    instrumentation.uiAutomation.executeShellCommand(
+                        "am start -W -a android.intent.action.MAIN -c android.intent.category.HOME"
+                    )
                 ).use { it.readBytes() }
                 android.os.ParcelFileDescriptor.AutoCloseInputStream(
                     instrumentation.uiAutomation.executeShellCommand(

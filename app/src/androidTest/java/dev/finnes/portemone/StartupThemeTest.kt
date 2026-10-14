@@ -8,7 +8,6 @@ import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
-import android.graphics.drawable.AdaptiveIconDrawable
 import android.os.Build
 import android.view.ContextThemeWrapper
 import androidx.compose.material3.dynamicDarkColorScheme
@@ -41,13 +40,14 @@ class StartupThemeTest {
     fun lightNativeLaunchWindowMatchesTheLightApplicationSurface() = checkNativeTheme(night = false)
 
     @Test
-    fun nativeSplashKeepsTheMidnightAdaptiveBrandIconInBothThemeModes() {
+    fun nativeSplashDrawsForegroundOnMidnightWithoutAnIconBadge() {
         listOf(false, true).forEach { night ->
             val context = launcherTheme(night)
             val attributes = context.obtainStyledAttributes(
                 intArrayOf(
                     android.R.attr.windowSplashScreenAnimatedIcon,
                     android.R.attr.windowSplashScreenIconBackgroundColor,
+                    android.R.attr.windowSplashScreenBackground,
                 )
             )
             try {
@@ -58,21 +58,28 @@ class StartupThemeTest {
                 )
                 val icon =
                     checkNotNull(attributes.getDrawable(0)) { "A native splash icon is required" }
-                assertTrue(
-                    "Launch must preserve the deliberate adaptive brand background",
-                    icon is AdaptiveIconDrawable
+                assertEquals(
+                    "The splash surface supplies the midnight brand background",
+                    Color.rgb(33, 29, 71),
+                    attributes.getColor(2, Color.MAGENTA)
                 )
                 val bitmap = Bitmap.createBitmap(288, 288, Bitmap.Config.ARGB_8888)
                 try {
                     icon.setBounds(0, 0, bitmap.width, bitmap.height)
                     icon.draw(Canvas(bitmap))
                     assertEquals(
-                        "The brand background stays midnight in both theme modes",
-                        Color.rgb(33, 29, 71),
+                        "The foreground must not paint a second background disk",
+                        Color.TRANSPARENT,
                         bitmap.getPixel(24, 144)
                     )
+                    assertTrue(
+                        "The splash foreground must contain visible artwork",
+                        (0 until bitmap.height).any { y ->
+                            (0 until bitmap.width).any { x -> Color.alpha(bitmap.getPixel(x, y)) > 0 }
+                        }
+                    )
                     assertEquals(
-                        "The adaptive icon mask must keep its outer corner transparent",
+                        "The foreground keeps its outer corner transparent",
                         Color.TRANSPARENT,
                         bitmap.getPixel(0, 0)
                     )
@@ -106,8 +113,8 @@ class StartupThemeTest {
             )
             assertTrue("Light startup must retain its light surface", night || luminance > .8)
             assertEquals(
-                "Native splash and first Activity window must share one surface",
-                background,
+                "The native splash retains its brand surface in both theme modes",
+                Color.rgb(33, 29, 71),
                 attributes.getColor(1, Color.MAGENTA)
             )
             assertEquals(background, attributes.getColor(2, Color.MAGENTA))
