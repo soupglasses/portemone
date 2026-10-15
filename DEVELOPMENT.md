@@ -33,11 +33,14 @@ scripts/capture-readme-screenshots.sh Pixel_8
 ```
 
 Replace `Pixel_8` with your AVD name, or omit it to be prompted. The script clears
-Portemoné's data on that emulator, installs the debug app and test APK, grants
-location permission, and fixes the emulator location near the fictional stores.
-It updates matching light and dark wallet, nearby carousel and card details
-screenshots, plus shared QR, Code 128 and PDF417 expanded-code screenshots in
-`docs/assets/screenshots/`. It refuses to run
+Portemoné's and its notification companion's data on that emulator, installs
+the debug apps and test APKs, enables companion delegation, grants notification
+and location permissions, and fixes the emulator location near the fictional stores.
+It updates matching light and dark wallet, nearby carousel and Brutto Minus
+lock-screen screenshots, plus shared QR, Code 128 and PDF417 expanded-code screenshots in
+`docs/assets/screenshots/`. The lock-screen capture verifies that the visible QR
+code decodes to the demo card while the keyguard is locked. Use an AVD without
+a PIN or password. It refuses to run
 while another emulator is online and leaves physical devices alone. The
 original logo drawings are in `docs/assets/demo/`; their PNG test fixtures are
 in `app/src/androidTest/assets/demo/`. Regenerate a fixture after editing a logo

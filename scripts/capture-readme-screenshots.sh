@@ -25,7 +25,7 @@ adb_bin="$sdk/platform-tools/adb"
     exit 1
 }
 
-# The capture resets only Portemoné's app data on the selected emulator.
+# The capture resets Portemoné and its companion on the selected emulator.
 serial=
 while read -r candidate state _; do
     [[ "$candidate" == emulator-* && "$state" == device ]] || continue
@@ -82,13 +82,27 @@ trap cleanup EXIT
 "$adb_bin" -s "$serial" shell am broadcast -a com.android.systemui.demo -e command notifications -e visible false >/dev/null
 
 ./gradlew --no-daemon --console=plain --max-workers=2 \
-    :app:assembleDebug :app:assembleDebugAndroidTest
+    :app:assembleDebug :app:assembleDebugAndroidTest \
+    :notification-companion:assembleDebug :notification-companion:assembleDebugAndroidTest
 "$adb_bin" -s "$serial" install -r app/build/outputs/apk/debug/app-debug.apk
 "$adb_bin" -s "$serial" install -r app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
+"$adb_bin" -s "$serial" install -r notification-companion/build/outputs/apk/debug/notification-companion-debug.apk
+"$adb_bin" -s "$serial" install -r notification-companion/build/outputs/apk/androidTest/debug/notification-companion-debug-androidTest.apk
+"$adb_bin" -s "$serial" shell pm clear dev.finnes.portemone.notificationcompanion
+"$adb_bin" -s "$serial" shell pm grant dev.finnes.portemone.notificationcompanion android.permission.POST_NOTIFICATIONS
+"$adb_bin" -s "$serial" shell am instrument -w \
+    -e notificationIntegrationTests true -e helperDelegate true \
+    -e class 'dev.finnes.portemone.notificationcompanion.NotificationDelegationTest#explicitConsentEnablesAndRevokesTheActualDelegate' \
+    dev.finnes.portemone.notificationcompanion.test/androidx.test.runner.AndroidJUnitRunner | tee "$test_log"
+grep -Fq 'OK (1 test)' "$test_log" || {
+    echo 'Screenshot notification companion setup failed.' >&2
+    exit 1
+}
 for theme in light dark; do
     if [[ "$theme" == light ]]; then night=no; else night=yes; fi
     "$adb_bin" -s "$serial" shell cmd uimode night "$night"
     "$adb_bin" -s "$serial" shell pm clear dev.finnes.portemone
+    "$adb_bin" -s "$serial" shell pm grant dev.finnes.portemone android.permission.POST_NOTIFICATIONS
     "$adb_bin" -s "$serial" shell pm grant dev.finnes.portemone android.permission.ACCESS_FINE_LOCATION
     "$adb_bin" -s "$serial" shell pm grant dev.finnes.portemone android.permission.ACCESS_BACKGROUND_LOCATION
     "$adb_bin" -s "$serial" emu geo fix 12.5683 55.6761
@@ -108,7 +122,7 @@ done
 
 for theme in light dark; do
     mkdir -p "docs/assets/screenshots/$theme"
-    names=(wallet nearby-first card-details)
+    names=(wallet nearby-first lock-screen)
     for name in "${names[@]}"; do
         [[ -s "$capture_dir/$theme/$name.png" ]] || {
             echo "Missing $theme/$name.png from screenshot run." >&2
@@ -129,4 +143,4 @@ for name in qr code-128 pdf417; do
     printf 'SPDX-FileCopyrightText: 2026 Sofie Finnes <sofie+git@finnes.dev>\nSPDX-License-Identifier: EUPL-1.2\n' \
         >"docs/assets/screenshots/expanded/$name.png.license"
 done
-echo 'Captured light and dark wallet, nearby, card details, and shared expanded-code screenshots.'
+echo 'Captured light and dark wallet, nearby, lock screen, and shared expanded-code screenshots.'

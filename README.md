@@ -29,13 +29,13 @@ home-screen widgets and nearby-card notifications. Requires Android 12+.
       </picture>
     </td>
     <td>
-      <picture>
-        <source media="(prefers-color-scheme: dark)" srcset="docs/assets/screenshots/dark/card-details.png">
-        <img src="docs/assets/screenshots/light/card-details.png" width="240" alt="Brutto Minus card details with a QR code and a saved store location on a map">
-      </picture>
+      <img src="docs/assets/screenshots/expanded/code-128.png" width="240" alt="Krumle Kiosk Snack Pass with an enlarged Code 128 barcode">
     </td>
     <td>
-      <img src="docs/assets/screenshots/expanded/code-128.png" width="240" alt="Krumle Kiosk Snack Pass with a Code 128 barcode">
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="docs/assets/screenshots/dark/lock-screen.png">
+        <img src="docs/assets/screenshots/light/lock-screen.png" width="240" alt="Brutto Minus notification with a scannable QR code on the Pixel emulator lock screen">
+      </picture>
     </td>
   </tr>
 </table>

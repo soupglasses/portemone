@@ -4,18 +4,20 @@
 package dev.finnes.portemone
 
 import android.graphics.Bitmap
-import android.graphics.Color
+import android.app.KeyguardManager
+import android.os.ParcelFileDescriptor
 import android.util.Base64
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.geometry.Rect
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import dev.finnes.portemone.cards.LocalCardRepository
 import dev.finnes.portemone.location.LocationSettings
 import dev.finnes.portemone.location.LocationEngine
+import dev.finnes.portemone.notifications.CardNotificationManager
+import dev.finnes.portemone.notifications.integrations.CompanionNotificationClient
 import java.io.File
 import org.junit.Rule
 import org.junit.Test
@@ -28,7 +30,7 @@ class ReadmeScreenshotTest {
     @get:Rule val compose = createEmptyComposeRule()
 
     @Test
-    fun captureWalletNearbyDetailsAndCodeFormats() {
+    fun captureWalletNearbyCodeFormatsAndLockScreen() {
         val instrumentation = InstrumentationRegistry.getInstrumentation()
         val context = instrumentation.targetContext
         val theme = InstrumentationRegistry.getArguments().getString("screenshotTheme", "light")
@@ -91,20 +93,6 @@ class ReadmeScreenshotTest {
             }
             capture("wallet")
         }
-        ActivityScenario.launch<CardActivity>(CardActivity.intent(context, cards[0])).use {
-            val map = compose.onNodeWithTag("location_map_readme-brutto-centre")
-            map.assertExists()
-            val bounds = map.fetchSemanticsNode().boundsInWindow
-            compose.waitUntil(20_000) {
-                val screenshot = requireNotNull(instrumentation.uiAutomation.takeScreenshot())
-                try {
-                    mapTilesVisible(screenshot, bounds)
-                } finally {
-                    screenshot.recycle()
-                }
-            }
-            capture("card-details")
-        }
         if (theme == "light") {
             listOf(
                 "qr" to cards[0], "code-128" to cards[1], "pdf417" to cards[4]
@@ -125,23 +113,48 @@ class ReadmeScreenshotTest {
             }
             capture("nearby-first")
         }
+        // Freeze nearby updates so only the featured card appears on the lock screen.
+        settings.enabled = false
+        val notifications = CardNotificationManager(context)
+        notifications.hide()
+        check(CompanionNotificationClient(context).status().ready)
+        check(notifications.show(cards[0]))
+        fun shell(command: String) = ParcelFileDescriptor.AutoCloseInputStream(
+            instrumentation.uiAutomation.executeShellCommand(command)
+        ).bufferedReader().use { it.readText().trim() }
+        val lockDisabled = shell("locksettings get-disabled")
+        val keyguard = context.getSystemService(KeyguardManager::class.java)
+        check(!keyguard.isDeviceSecure) { "Screenshot emulator must not have a PIN" }
+        try {
+            shell("locksettings set-disabled false")
+            shell("input keyevent KEYCODE_SLEEP")
+            compose.waitUntil(8_000) { keyguard.isKeyguardLocked }
+            shell("input keyevent KEYCODE_WAKEUP")
+            compose.waitUntil(15_000) {
+                val bitmap = requireNotNull(instrumentation.uiAutomation.takeScreenshot())
+                try {
+                    val pixels = IntArray(bitmap.width * bitmap.height)
+                    bitmap.getPixels(pixels, 0, bitmap.width, 0, 0, bitmap.width, bitmap.height)
+                    runCatching {
+                        com.google.zxing.MultiFormatReader().decode(
+                            com.google.zxing.BinaryBitmap(com.google.zxing.common.HybridBinarizer(
+                                com.google.zxing.RGBLuminanceSource(bitmap.width, bitmap.height, pixels)
+                            ))
+                        ).text == cards[0].rawValue
+                    }.getOrDefault(false)
+                } finally {
+                    bitmap.recycle()
+                }
+            }
+            instrumentation.uiAutomation.waitForIdle(1_000, 8_000)
+            check(keyguard.isKeyguardLocked)
+            capture("lock-screen")
+        } finally {
+            shell("input keyevent KEYCODE_WAKEUP")
+            shell("wm dismiss-keyguard")
+            shell("locksettings set-disabled $lockDisabled")
+            notifications.hide()
+        }
     }
 
-    private fun mapTilesVisible(image: Bitmap, bounds: Rect): Boolean {
-        val colors = mutableSetOf<Int>()
-        var bright = 0
-        var samples = 0
-        for (row in 1..8) for (column in 1..20) {
-            val x = (bounds.left + bounds.width * column / 21).toInt().coerceIn(0, image.width - 1)
-            val y = (bounds.top + bounds.height * row / 20).toInt().coerceIn(0, image.height - 1)
-            val pixel = image.getPixel(x, y)
-            val red = Color.red(pixel)
-            val green = Color.green(pixel)
-            val blue = Color.blue(pixel)
-            if (minOf(red, green, blue) > 160) bright++
-            colors += ((red shr 4) shl 8) or ((green shr 4) shl 4) or (blue shr 4)
-            samples++
-        }
-        return bright > samples / 2 && colors.size > 25
-    }
 }
